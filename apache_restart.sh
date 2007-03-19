@@ -16,7 +16,7 @@ fi
 sudo /usr/sbin/apachectl stop
 for i in 1 2 3 4 5 6 7 8 9 10; do
 	if [ -z `pgrep -U www -f 'httpd: parent'` ]; then
-		sudo -c www /usr/sbin/apachectl startssl
+		env -i sudo -c www /usr/sbin/apachectl startssl
 		if [ $? -eq 0 ]; then
 			sudo /opt/create_apache_sites_page.rb
 		fi
