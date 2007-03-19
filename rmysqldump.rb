@@ -155,10 +155,10 @@ module MySQL
     end
 
     def parameters_for(database)
-      params = "--default-character-set=#{database.charset} \
-                --user #{$server[:user]} \
-                --password=#{$server[:password]} \
-                --host #{$server[:host]}"
+      params   = "--default-character-set=#{database.charset} \
+                  --user #{$server[:user]} \
+                  --password=#{$server[:password]} \
+                  --host #{$server[:host]}"
       params += " --compress" if $server[:compress]
       params += " --lock-tables" if database.lock
       params
