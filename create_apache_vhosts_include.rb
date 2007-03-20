@@ -14,7 +14,7 @@ File.open('/var/www/conf/vhosts.conf', 'w') do |f|
   ServerName #{site.domain}
   ServerAlias www.#{site.domain}
   DocumentRoot #{site.path}
-  php_value mail.force_extra_parameters "-f#{site.user}@phoo.starkast.net"
+  php_value mail.force_extra_parameters "-f#{site.user || 'www'}@phoo.starkast.net"
 </VirtualHost>
 
 EOF
