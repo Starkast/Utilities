@@ -14,12 +14,14 @@ if [ $? != 0 ]; then
 	exit 1
 fi
 
+# Not the output syntax, important for status pages
+
 if rsync -azv --delete --force ${HOST}::dflysnap/  ./
 then
-	echo "Latest sync of /pub/DragonFly: "`date`
-	( cd /var/www/ftp/pub/DragonFly/iso-images/; md5 * > md5.txt )
+	echo "OK,/pub/DragonFly,$HOST,`date`"
+	(cd iso-images/; md5 * > md5.txt)
+	exit 0
 else
-	echo "Could not sync /pub/DragonFly: "`date`
+	echo "NOTOK,/pub/DragonFly,$HOST,`date`" >&2
+	exit 1
 fi
-
-exit 0
