@@ -1,4 +1,4 @@
-# $id$
+# $Id: generate_bitlbee_graph.sh,v 1.2 2007/03/24 21:00:06 jage Exp $
 #
 # Written by Johan Eckerström <johan@jage.se>
 
