@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>ftp.starkast.net</title>
+  <link href="/stylesheets/default.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+	<div id="title"><h1><a href="http://ftp.starkast.net/">ftp.starkast.net</a></h1></div>
+	<p><em><a href="/pub/">Browse the archive</a></em> or connect through <a href="ftp://ftp.starkast.net/pub/">FTP</a></p>
+	
+	<h1>About</h1>
+	<p>Located south of Stockholm, Sweden, and maintained by the <a href="http://www.starkast.net/">Starkast association</a>.</p>
+	
+	<h1>Status</h1>
+	<ul>
+		<li>Load averages: <%= load_avg %></li>
+		<li>Serving <%= data_size %> with a total of <%= total_files %> files</li>
+	</ul>
+	<h3>Mirror synchronisations</h3>
+	<ul><% for mirror in mirror_syncs do %>
+		<li><a href="<%= mirror[:path] %>"><%= mirror[:path] %></a> updated on <%= mirror[:updated_on] %> from <a href="http://<%= mirror[:host] %>/<%= mirror[:path] %>"><%= mirror[:host] %></a></li>
+	</ul><% end %>
+
+	<p><code>$id$</code></p>
+</body>
+</html>
