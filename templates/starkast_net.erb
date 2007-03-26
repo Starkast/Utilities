@@ -9,14 +9,16 @@
 <body>
 	<div id="wrap">
 		<div id="header">
-	      <p id="title"><a href="/">Starkast</a></p>
+			<p id="title"><a href="/"><span
+					class="title">www</span>.starkast.net</a></p>
 	      <p class="description">Insamlat från <%= domains.collect {|i| "<a href='http://#{i}/'>#{i}</a>" }.join(', ') %>.</p>
 	    </div>
 	    <div id="content">
 <% for entry in entries do %>
 	<div class="entry">
 		<div class="entrytitle">
-			<h1><a href="<%= entry.link %> "><%= entry.title %></a> (<a class="sitelink" href="http://<%= entry.domain %>"><%= entry.domain %></a>)</h1> 
+			<h2><a href="<%= entry.link %> "><%= entry.title %></a> (<a
+					class="sitelink" href="http://<%= entry.domain %>"><%= entry.domain %></a>)</h2> 
 		</div>
 		<div class="entrybody">
 			<%= entry.html_content %>
