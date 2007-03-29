@@ -1,12 +1,12 @@
 #!/usr/bin/env ruby
 
-# $Id: ftp_status.rb,v 1.3 2007/03/24 21:14:59 jage Exp $
+# $Id: ftp_status.rb,v 1.4 2007/03/29 08:27:27 jage Exp $
 #
 # Written by Johan Eckerström <johan@jage.se>
 
 require 'erb'
 
-cache_time   = 6*24*60*60 # max 4 times a day
+cache_time   = 6*60*60 # max 4 times a day
 cache_file   = "/var/tmp/ftp_status_for_#{`whoami`.strip}.cache"
 erb_template = '/opt/templates/ftp_starkast_net.erb'
 html_output  = '/var/www/ftp/index.html'
