@@ -7,13 +7,18 @@
   <link href="/stylesheets/default.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
-	<div id="title"><h1><a href="http://ftp.starkast.net/">ftp.starkast.net</a></h1></div>
+	<p><h1>
+		<a href="http://ftp.starkast.net/">
+			<span class="title">ftp</span><span class="starkast">.starkast.net</span>
+		</a>
+	</h1></p>	
+	
 	<p><em><a href="/pub/">Browse the archive</a></em> or connect through <a href="ftp://ftp.starkast.net/pub/">FTP</a></p>
 	
-	<h1>About</h1>
+	<h2>About</h2>
 	<p>Located south of Stockholm, Sweden, and maintained by the <a href="http://www.starkast.net/">Starkast association</a>.</p>
 	
-	<h1>Status</h1>
+	<h2>Status</h2>
 	<ul>
 		<li>Load averages: <%= load_avg %></li>
 		<li>Serving <%= data_size %> with a total of <%= total_files %> files</li>
@@ -23,6 +28,6 @@
 		<li><a href="<%= mirror[:path] %>"><%= mirror[:path] %></a> updated on <%= mirror[:updated_on] %> from <a href="http://<%= mirror[:host] %>/<%= mirror[:path] %>"><%= mirror[:host] %></a></li>
 	</ul><% end %>
 
-	<p><code>$Id: ftp_starkast_net.erb,v 1.2 2007/03/24 20:59:19 jage Exp $</code></p>
+	<p><code>$Id: ftp_starkast_net.erb,v 1.3 2007/04/01 22:32:46 dentarg Exp $</code></p>
 </body>
 </html>
