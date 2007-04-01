@@ -22,10 +22,12 @@ File.open('/var/www/htdocs/sites.html', 'w') do |f|
     <link rel="stylesheet" type="text/css" href="stylesheets/default.css" />
     <link rel="shortcut icon" type="image/ico" href="/favicon.ico" />
   </head>
-  <p>
-    <a href="http://phoo.starkast.net/"><img src="/phoo.png" alt="Phoo.starkast.net" border="0" /></a>
-  </p>'
-  f.puts "<h1>#{sites.length} sites</h1>"
+	<p><h1>
+		<a href="/">
+			<span class="title">phoo</span><span class="starkast">.starkast.net</span>
+		</a>
+	</h1></p>'
+  f.puts "<h2>#{sites.length} sites</h2>"
   f.puts "<ul>"
   sites.each do |site|
   f.puts <<EOF
