@@ -20,14 +20,14 @@
 	
 	<h2>Status</h2>
 	<ul>
-		<li>Load averages: <%= load_avg %></li>
-		<li>Serving <%= data_size %> with a total of <%= total_files %> files</li>
+		<li>Load averages: <%= @load_avg %></li>
+		<li>Serving <%= @data_size %> with a total of <%= @total_files %> files</li>
 	</ul>
 	<h3>Mirror synchronisations</h3>
-	<ul><% for mirror in mirror_syncs do %>
+	<ul><% for mirror in @mirror_syncs do %>
 		<li><a href="<%= mirror[:path] %>"><%= mirror[:path] %></a> updated on <%= mirror[:updated_on] %> from <a href="http://<%= mirror[:host] %>/<%= mirror[:path] %>"><%= mirror[:host] %></a></li>
 	</ul><% end %>
 
-	<p><code>$Id: ftp_starkast_net.erb,v 1.4 2007/04/01 22:34:22 dentarg Exp $</code></p>
+	<p><code>$Id: ftp_starkast_net.erb,v 1.5 2007/04/02 07:18:03 jage Exp $</code></p>
 </body>
 </html>
