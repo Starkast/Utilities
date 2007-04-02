@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# $Id: rss_mixer.rb,v 1.2 2007/03/24 21:00:06 jage Exp $
+# $Id: rss_mixer.rb,v 1.3 2007/04/02 14:01:43 jage Exp $
 # 
 # Written by Johan Eckerström <johan@jage.se>
 #
@@ -24,6 +24,7 @@ feeds = %w[
   jage.se/feed/
   blog.dentarg.net/feed/
   blog.tigermann.net/feed/
+  ludde.starkast.net/feed/
 ]
 
 feeds.each do |feed|
