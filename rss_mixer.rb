@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# $Id: rss_mixer.rb,v 1.3 2007/04/02 14:01:43 jage Exp $
+# $Id: rss_mixer.rb,v 1.4 2007/04/14 17:46:14 jage Exp $
 # 
 # Written by Johan Eckerström <johan@jage.se>
 #
@@ -27,11 +27,18 @@ feeds = %w[
   ludde.starkast.net/feed/
 ]
 
+attempts = Hash.new(0)
 feeds.each do |feed|
   begin
     rss = SimpleRSS.parse(open("http://#{feed}"))
   rescue
-    next
+    attempts[feed] += 1
+    if attempts[feed] < 3
+      sleep 5
+      retry
+    else
+      next
+    end
   end
   domain = feed.split('/').first
   domains << domain
