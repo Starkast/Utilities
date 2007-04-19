@@ -67,11 +67,12 @@ def checkquota(dir)
 	# Gå igenom alla rader från repquota-outputen
 	lines = output.split "\n"
   lines.each do |line|
-		if line =~ /^(\S?[a-z]+)\s*(\W{2})\s*(\d+)\s+(\d+)/
+		if line =~ /^(\S?[a-z]+)\s*(\W{2})\s*(\d+)\s+(\d+)\s+(\d+)/
 			username = $1
 			mark = $2
 			used = $3.to_i
 			soft = $4.to_i
+			hard = $5.to_i
 
 			# Användare över quota undersöker vi närmare
 			if mark.include?("+")
