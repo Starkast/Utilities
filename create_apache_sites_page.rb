@@ -6,10 +6,8 @@ hidden = ['jage.roden.dev.imum.net',
           'bilder.ragnarsson.nu',
           'zatte.roden.dev.imum.net']
 
-sites = Phoo::Sites.find('/var/www/users/*/vhosts/*') + \
-  Phoo::Sites.find('/var/www/users/*/htdocs') + \
-  Phoo::Sites.find('/var/www/vhosts/*')
-
+# /var/www/vhosts* /var/www/users/*/htdocs /var/www/users/*/vhosts/*
+sites = Phoo::Sites.find('/var/www/{vhosts/*,users/*/{htdocs,vhosts/*}}')
 sites.delete_if {|i| hidden.include? i.domain }
 
 File.open('/var/www/htdocs/sites.html', 'w') do |f|
@@ -30,7 +28,7 @@ File.open('/var/www/htdocs/sites.html', 'w') do |f|
   f.puts "<h2>#{sites.length} sites</h2>"
   f.puts "<ul>"
   sites.each do |site|
-  f.puts <<EOF
+    f.puts <<EOF
   <li><a href=\"http://#{site.domain}\">#{site.domain}</li>
 EOF
   end
