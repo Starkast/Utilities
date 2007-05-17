@@ -63,7 +63,7 @@ $homeusers = `ls -1 /home`.split(/\n/)
 
 # Kontrollerar quota för alla användare
 def checkquota(partion)
-  command = "repquota " + partion
+  command = "sudo repquota " + partion
   output = `#{command}`
 	filedir = "/var/db/quota_monitor/"
   filename = filedir + "bad_" + partion.split('/').join('_').sub('_','') + "_users"
