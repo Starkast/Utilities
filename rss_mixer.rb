@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# $Id: rss_mixer.rb,v 1.6 2007/04/20 21:46:23 jage Exp $
+# $Id: rss_mixer.rb,v 1.7 2007/05/17 11:01:45 jage Exp $
 # 
 # Written by Johan Eckerström <johan@jage.se>
 #
@@ -11,11 +11,12 @@ require 'open-uri'
 require 'erb'
 require 'htmlentities'
 require 'rss/maker'
+require 'active_support'
 
-html_output  = '/home/jage/www/vhosts/starkast.net/index.html'
-rss_output   = '/home/jage/www/vhosts/starkast.net/index.rss'
+html_output  = '/var/www/vhosts/starkast.net/index.html'
+rss_output   = '/var/www/vhosts/starkast.net/index.rss'
 erb_template = '/opt/templates/starkast_net.erb'
-home_url     = 'http://www.starkast.net/'
+home_url     = 'http://starkast.net/'
 
 entries = []
 domains = []
@@ -34,55 +35,27 @@ feeds = %w[
 # Credit to Cocoa for the idea
 #
 # Options are used to set a minimum accuracy
-def age_in_swedish_words(options = Hash.new)
-  to_time = Time.now unless to_time
+def age_in_swedish_words(time = Time.now)
+  to_time = Time.now
 
-  age_in_minutes = ((to_time - self) / 60).round.abs
-  age_in_seconds = ((to_time - self)).round.abs
+  age_in_minutes = ((to_time - time) / 60).round.abs
+  age_in_seconds = ((to_time - time)).round.abs
 
-  if options[:minutes]
-    case age_in_minutes
-    when 0..1
-      case age_in_seconds
-      when 0..59 then  "cirka 1 minut"
-      else             "1 minut"
-      end
-    when 2..45      then "#{age_in_minutes} minuter"
-    when 46..90     then "cirka 1 timme"
-    when 80..1440   then "cirka #{(age_in_minutes.to_f / 60.0).round} timmar"
-    when 1441..2880 then "1 dag"
-    else                 "#{(age_in_minutes / 1440).round} dagar"
+  case age_in_minutes
+  when 0..1
+    case age_in_seconds
+    when 0..5   then "mindre än 5 sekunder"
+    when 6..10  then "mindre än 10 sekunder"
+    when 11..20 then "mindre än 20 sekunder"
+    when 21..40 then "en halv minut"
+    when 41..59 then "mindre än en minut"
+    else             "1 minut"
     end
-  elsif options[:hours]
-    case age_in_minutes
-    when 0..90      then "cirka 1 timme"
-    when 80..1440   then "cirka #{(age_in_minutes.to_f / 60.0).round} timmar"
-    when 1441..2880 then "1 dag"
-    else                 "#{(age_in_minutes / 1440).round} dagar"
-    end
-  elsif options[:days]
-    case age_in_minutes
-    when 0..1440    then "mindre än 1 dag" 
-    when 1441..2880 then "1 dag"
-    else                 "#{(age_in_minutes / 1440).round} dagar"
-    end
-  else
-    case age_in_minutes
-    when 0..1
-      case age_in_seconds
-      when 0..5   then "mindre än 5 sekunder"
-      when 6..10  then "mindre än 10 sekunder"
-      when 11..20 then "mindre än 20 sekunder"
-      when 21..40 then "en halv minut"
-      when 41..59 then "mindre än en minut"
-      else             "1 minut"
-      end
-    when 2..45      then "#{age_in_minutes} minuter"
-    when 46..90     then "cirka 1 timme"
-    when 80..1440   then "cirka #{(age_in_minutes.to_f / 60.0).round} timmar"
-    when 1441..2880 then "1 dag"
-    else                 "#{(age_in_minutes / 1440).round} dagar"
-    end
+  when 2..45      then "#{age_in_minutes} minuter"
+  when 46..90     then "cirka 1 timme"
+  when 80..1440   then "cirka #{(age_in_minutes.to_f / 60.0).round} timmar"
+  when 1441..2880 then "1 dag"
+  else                 "#{(age_in_minutes / 1440).round} dagar"
   end
 end
 
@@ -120,7 +93,7 @@ rss_content = RSS::Maker.make('2.0') do |m|
     i             = m.items.new_item
     i.title       = "#{e.title} (#{e.domain})"
     i.link        = e.link
-    i.date        = e.date
+    i.date        = e.published
     i.description = e.html_content
   end
 end

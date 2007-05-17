@@ -11,21 +11,35 @@
 		<div id="header">
 			<p id="title"><a href="/"><span
 					class="title">www</span>.starkast.net</a></p>
-	      <p class="description">Insamlat från <%= domains.collect {|i| "<a href='http://#{i}/'>#{i}</a>" }.join(', ') %>.</p>
+			<h3 class="links">
+			Andra Starkast-siter
+			<a href="http://wiki.starkast.net">Wiki</a>, 
+			<a href="http://bilder.starkast.net">Bilder</a>, 
+			<a href="http://im.starkast.net">IM</a> &
+			<a href="http://webmail.starkast.net">Webmail</a>
+			</h3>
+<% unless entries.empty? %>
+	    	<p class="description">Insamlat från <%= domains.collect {|i| "<a href='http://#{i}/'>#{i}</a>" }.join(', ') %>.</p>
 	    </div>
 	    <div id="content">
-<% for entry in entries do %>
-	<div class="entry">
-		<div class="entrytitle">
-			<h2><a href="<%= entry.link %> "><%= entry.title %></a> (<a
-					class="sitelink" href="http://<%= entry.domain %>"><%= entry.domain %></a>)</h2> 
-		</div>
-		<div class="entrybody">
-			<%= entry.html_content %>
-		</div>
+	<% latest_date = entries.first.published.at_beginning_of_day %>
+	<h3><%= age_in_swedish_words(latest_date).capitalize %> sedan</h3>
+	        <ul>
+	<% for entry in entries do %>
+	<% if entry.published.at_beginning_of_day < latest_date %>
+	<% latest_date = entry.published.at_beginning_of_day %>
+		</ul>
+		<h3><%= age_in_swedish_words(latest_date).capitalize %> sedan</h3>
+		<ul>
+	<% end %>
+		<li><a href="<%= entry.link %> "><%= entry.title %></a> (<a
+			class="sitelink" 
+			href="http://<%= entry.domain %>"><%= entry.domain %></a>)
+		</li> 
+	<% end %>
+		</ul>
 	</div>
 <% end %>
-	</div>
 </div>
 </body>
 </html>
