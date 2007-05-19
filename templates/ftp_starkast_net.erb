@@ -25,9 +25,10 @@
 	</ul>
 	<h3>Mirror synchronisations</h3>
 	<ul><% for mirror in @mirror_syncs do %>
-		<li><a href="<%= mirror[:path] %>"><%= mirror[:path] %></a> updated on <%= mirror[:updated_on] %> from <a href="http://<%= mirror[:host] %>/<%= mirror[:path] %>"><%= mirror[:host] %></a></li>
+    <li><a href="<%= mirror[:path] %>"><%= mirror[:path] %></a> updated on <%= mirror[:updated_on] %> from <a href="http://<%= mirror[:host] %>/<%= mirror[:path] %>"><%= mirror[:host] %></a>
+    <% if mirror[:status] == 'NOTOK' %> <em>(some files could not be transferred)</em> <% end %></li>
 	</ul><% end %>
 
-	<p><code>$Id: ftp_starkast_net.erb,v 1.5 2007/04/02 07:18:03 jage Exp $</code></p>
+	<p><code>$Id: ftp_starkast_net.erb,v 1.6 2007/05/19 11:04:12 jage Exp $</code></p>
 </body>
 </html>
