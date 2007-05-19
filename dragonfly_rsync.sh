@@ -22,6 +22,6 @@ then
 	(cd iso-images/; md5 * > md5.txt)
 	exit 0
 else
-	echo "NOTOK,/pub/DragonFly,$HOST,`date`" >&2
+	echo "NOTOK,/pub/DragonFly,$HOST,`date`"
 	exit 1
 fi
