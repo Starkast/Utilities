@@ -3,7 +3,8 @@
 #
 # Written by Johan Eckerström <johan@jage.se> 
 # 
-# 2007-05-22 - Stop using regexp for owner_map
+# 2007-05-22 - Stop using regexp for owner_map \
+#               and improve syslog message
 # 2006-12-19 - Compression for servers
 # 2006-12-01 - External configuration file
 # 2006-11-21 - Easier to change the user mapping regexp
@@ -149,9 +150,10 @@ module MySQL
             failure("Could not set permissions: #{error.message}")
           end
         end
-     end
-      Syslog.info("#{@databases.successes.length} databases dumped successfully")
-      Syslog.info("#{@databases.skipped.length} databases skipped") if @databases.skipped.length > 0
+      end
+      message  = "#{@databases.successes.length} databases dumped successfully"
+      message += ", #{@databases.skipped.length} skipped" if @databases.skipped.length > 0
+      Syslog.info(message)
       Syslog.err("#{@databases.failed.length} databases failed") if @databases.failed.length > 0
       Syslog.close
     end
