@@ -3,6 +3,7 @@
 #
 # Written by Johan Eckerström <johan@jage.se> 
 # 
+# 2007-05-22 - Stop using regexp for owner_map
 # 2006-12-19 - Compression for servers
 # 2006-12-01 - External configuration file
 # 2006-11-21 - Easier to change the user mapping regexp
@@ -83,10 +84,10 @@ module MySQL
       @group   = option_for(:group).to_s
       @charset = option_for(:charset).to_s
       @skip    = option_for(:skip)
+
       # Would be better if the database specific owner could override this
-      if option_for(:map_owner) and match = $user_map_regexp.match(@name)
-        match = match[2] || match[1] 
-        @owner = match if $users.include?(match)
+      if option_for(:map_owner) && owner = find_owner
+        @owner = owner
       end
     end
 
@@ -106,6 +107,18 @@ module MySQL
 
     def option_for(key)
       @options[key] || $global_options[key] || false
+    end
+
+    def find_owner
+        match = $users.select do |u|
+          @name.include?(u) && u == @name[0...u.length]
+        end
+
+        if match.empty? 
+          false
+        else
+          match.to_s
+        end
     end
   end
 
