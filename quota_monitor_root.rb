@@ -10,7 +10,6 @@ Dir.entries(dir)[2..-1].each do |filename|
 		# Läs in och skriv ut användare 
 		File::open(file) do |file|
 			while line = file.gets
-#				$users[$1] = $2 if line =~ /^(.+?) (\d+)$/
 				puts "  " + $1 if line =~ /^(.+?) (\d+)$/
 		  end
 		end
