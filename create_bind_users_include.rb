@@ -2,6 +2,8 @@
 
 require '/opt/lib/phoo.rb'
 
+exclude = %w(im ftp secure)
+
 
 File.open('/var/named/includes/starkast','w') do |f|
   f.puts "; Users"
@@ -18,5 +20,13 @@ File.open('/var/named/includes/starkast','w') do |f|
 
     f.puts "#{site.domain}.\tA\t#{$default_ip}"
     f.puts "www.#{site.domain}.\tA\t#{$default_ip}"
+  end
+
+  f.puts "\n; Main vhosts"
+    Phoo::Sites.find('/var/www/vhosts/*.starkast.net').each do |site|
+      next if exclude.include?(site.domain.split('.').first)
+
+      f.puts "#{site.domain}.\tA\t#{$default_ip}"
+      f.puts "www.#{site.domain}.\tA\t#{$default_ip}"
   end
 end
