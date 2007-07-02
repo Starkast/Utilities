@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# $Id: rss_mixer.rb,v 1.7 2007/05/17 11:01:45 jage Exp $
+# $Id: rss_mixer.rb,v 1.8 2007/07/02 13:25:11 jage Exp $
 # 
 # Written by Johan Eckerström <johan@jage.se>
 #
@@ -91,8 +91,8 @@ rss_content = RSS::Maker.make('2.0') do |m|
   m.items.do_sort
   entries.each do |e|
     i             = m.items.new_item
-    i.title       = "#{e.title} (#{e.domain})"
-    i.link        = e.link
+    i.title       = "#{coder.decode(e.title)} (#{e.domain})"
+    i.link        = coder.decode(e.link)
     i.date        = e.published
     i.description = e.html_content
   end
