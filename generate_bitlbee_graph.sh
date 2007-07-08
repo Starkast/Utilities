@@ -1,9 +1,9 @@
-# $Id: generate_bitlbee_graph.sh,v 1.3 2007/07/08 10:41:44 jage Exp $
+# $Id: generate_bitlbee_graph.sh,v 1.4 2007/07/08 11:01:49 jage Exp $
 #
 # Written by Johan Eckerström <johan@jage.se>
 
 
-DEST_HOME=/var/www/im.starkast.net/statistics
+DEST_HOME=/var/www/vhosts/im.starkast.net/statistics
 RRD_HOME=/var/www/symon/rrds/phoo
 
 plot_proc() {
