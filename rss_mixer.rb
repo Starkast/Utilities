@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# $Id: rss_mixer.rb,v 1.8 2007/07/02 13:25:11 jage Exp $
+# $Id: rss_mixer.rb,v 1.9 2007/07/16 22:25:32 jage Exp $
 # 
 # Written by Johan Eckerström <johan@jage.se>
 #
@@ -28,6 +28,7 @@ feeds = %w[
   ludde.starkast.net/feed/
   roger.starkast.net/feed/
   erik.starkast.net/feed/
+  pixl.se/feed/
 ]
 
 # Helpers
@@ -99,9 +100,9 @@ rss_content = RSS::Maker.make('2.0') do |m|
 end
 
 File.open(html_output, 'w') do |html_f|
-  html_f.print File.open(erb_template) {|fp| ERB.new(fp.read) }.result
+  html_f.puts File.open(erb_template) {|fp| ERB.new(fp.read) }.result
 end
 
 File.open(rss_output, 'w') do |rss_f|
-  rss_f.print rss_content
+  rss_f.puts rss_content
 end
