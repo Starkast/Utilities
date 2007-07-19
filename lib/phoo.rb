@@ -5,7 +5,7 @@ require 'pathname'
 module Phoo
   $default_domain = 'starkast.net'
   $default_ip     = '81.236.237.218'
-  $user_directory = /^\/var\/www\/users\/([\w]+)(\/|$)/
+	$user_directory = /^\/ustorage\/www\/users\/([\w]+)(\/|$)/
   $ignore_dirs    = /vhosts/
   
   class Sites
