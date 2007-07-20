@@ -27,13 +27,13 @@
 	    </div>
 	    <div id="content">
 	<% latest_date = entries.first.published.at_beginning_of_day %>
-	<h3><%= age_in_swedish_words(latest_date).capitalize %> sedan</h3>
+	<h3><%= age_in_swedish_words(latest_date).capitalize %></h3>
 	        <ul>
 	<% for entry in entries do %>
 	<% if entry.published.at_beginning_of_day < latest_date %>
 	<% latest_date = entry.published.at_beginning_of_day %>
 		</ul>
-		<h3><%= age_in_swedish_words(latest_date).capitalize %> sedan</h3>
+		<h3><%= age_in_swedish_words(latest_date).capitalize %></h3>
 		<ul>
 	<% end %>
 		<li><a href="<%= entry.link %> "><%= entry.title %></a> (<a

@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# $Id: rss_mixer.rb,v 1.9 2007/07/16 22:25:32 jage Exp $
+# $Id: rss_mixer.rb,v 1.10 2007/07/20 16:39:58 jage Exp $
 # 
 # Written by Johan Eckerström <johan@jage.se>
 #
@@ -43,20 +43,9 @@ def age_in_swedish_words(time = Time.now)
   age_in_seconds = ((to_time - time)).round.abs
 
   case age_in_minutes
-  when 0..1
-    case age_in_seconds
-    when 0..5   then "mindre än 5 sekunder"
-    when 6..10  then "mindre än 10 sekunder"
-    when 11..20 then "mindre än 20 sekunder"
-    when 21..40 then "en halv minut"
-    when 41..59 then "mindre än en minut"
-    else             "1 minut"
-    end
-  when 2..45      then "#{age_in_minutes} minuter"
-  when 46..90     then "cirka 1 timme"
-  when 80..1440   then "cirka #{(age_in_minutes.to_f / 60.0).round} timmar"
-  when 1441..2880 then "1 dag"
-  else                 "#{(age_in_minutes / 1440).round} dagar"
+  when 0..1440    then "idag"
+  when 1441..2880 then "1 dag sen"
+  else                 "#{(age_in_minutes / 1440).round} dagar sen"
   end
 end
 
