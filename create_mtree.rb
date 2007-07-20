@@ -39,7 +39,7 @@ end
 class Mtree
   def initialize
     @setting         = {}
-    @override        = {} || $override
+    @override        = $override || {}
     @setting.default = $default if $default
     @setting.merge!($special)   if $special
 
