@@ -16,12 +16,27 @@ fi
 
 # Not the output syntax, important for status pages
 
-if rsync -azv --delete --force ${HOST}::dflysnap/  ./
-then
-	echo "OK,/pub/DragonFly,$HOST,`date`"
-	(cd iso-images/; md5 * > md5.txt)
-	exit 0
-else
-	echo "NOTOK,/pub/DragonFly,$HOST,`date`"
-	exit 1
-fi
+mirror_sync() {
+	rsync -azv --delete --force ${HOST}::dflysnap/  ./
+}
+
+TRY=0
+mirror_wrapper() {
+	TRY=$(($TRY + 1))
+	mirror_sync
+	if [ $? -eq 0 ]; then
+		echo "OK,/pub/DragonFly,$HOST,`date`"
+		(cd iso-images/; md5 * > md5.txt)
+		exit 0
+	else
+		# $? -gt 6 means that if the error code isn't really bad,
+		# it'll try again
+		if [ $TRY -lt 6 -a $? -gt 6 ]; then
+			mirror_wrapper
+		else
+			echo "NOTOK,/pub/DragonFly,$HOST,`date`"
+			exit 1
+		fi
+	fi
+}
+mirror_wrapper
