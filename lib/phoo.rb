@@ -5,7 +5,8 @@ require 'pathname'
 module Phoo
   $default_domain = 'starkast.net'
   $default_ip     = '81.236.237.218'
-  $user_directory = /^\/ustorage\/www\/users\/([\w]+)(\/|$)/
+  $user_home_directory = /^\/ustorage\/home\/([\w]+)(\/|$)/
+  $user_www_directory = /^\/ustorage\/www\/users\/([\w]+)(\/|$)/
   $ignore_dirs    = /vhosts/
   
   class Sites
@@ -24,15 +25,21 @@ module Phoo
   class Site
     attr_reader :path, :domain, :user, :realpath
     def initialize(path)
-      @domain = File.basename(path)
-      @path = path
+      @domain   = File.basename(path)
+      @path     = path
       @realpath = Pathname.new(path).realpath
-      if match = $user_directory.match(Pathname.new(path).realpath)
-        @user = match[1].to_s
-      end
+      @user     = Dir.user(path)
       if @domain == 'htdocs'
         @domain = "#{@user}.#{$default_domain}"
       end
+    end
+  end
+
+  class Dir < Dir
+    def self.user(path)
+      path = Pathname.new(path).realpath
+      m = ($user_www_directory.match(path) || $user_home_directory.match(path))
+      m[1].to_s if m
     end
   end
 end
