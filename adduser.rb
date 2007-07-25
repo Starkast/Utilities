@@ -146,6 +146,9 @@ ARGV.options do |opts|
 	if ARGV.empty?
 		puts opts
 		exit
+	elsif ENV['USER'] != 'root'
+		puts "You are not root!"
+		exit 1
 	end
   
 	opts.parse!
@@ -153,7 +156,7 @@ ARGV.options do |opts|
 	required = [ :username, :email, :name ]
 	required.each do |option|
 		if not options.respond_to?(option)
-			puts "Du har glömt #{option}."
+			puts "You forgot to specify #{option}."
 			exit 1
 		end
 	end
