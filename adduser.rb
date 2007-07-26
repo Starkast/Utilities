@@ -76,6 +76,12 @@ def email_remove(username)
 	execute_command("/usr/local/sbin/postalias #{$mail_alias_file}")
 end
 
+def create_dir(dir, chown, chmod)
+	execute_command("/bin/mkdir #{dir}") if not File.exist?(dir)
+	execute_command("/usr/sbin/chown #{chown} #{dir}")
+	execute_command("/bin/chmod #{chmod} #{dir}")
+end
+
 def build_configs(mtree = false, bind = false)
 	execute_command("/usr/local/bin/ruby /opt/create_mtree.rb -f /etc/supervise/home.mtree") if mtree
 	execute_command("/usr/local/bin/ruby /opt/create_mtree.rb -f /etc/supervise/www.mtree") if mtree
@@ -113,7 +119,7 @@ eller skicka ett mail till kontakt@starkast.net.
 
 Mvh Starkast"
 
-	`echo "#{message}"|mail -s '#{subject}' -c #{admin} #{username}`
+	`echo "#{message}"|mail -s '#{subject}' #{username}`
 end
 
 # Specify the options and parse the arguments
@@ -205,27 +211,37 @@ ARGV.options do |opts|
 		
 		# Set permissions on homedir
 		homedir = "/home/#{options.username}"
+		create_dir(homedir, "#{options.username}:#{options.username}", "0750")
 		execute_command("/usr/sbin/chown #{options.username}:#{options.username} #{homedir}")
 		execute_command("/bin/chmod 0750 #{homedir}")
 
-		# Create ~/www/htdocs and set permissions
+		# Create web directories
 		wwwdir = "/var/www/users/#{options.username}"
-		execute_command("/bin/mkdir -p #{wwwdir}/htdocs")
-		execute_command("/usr/sbin/chown root:#{options.username} #{wwwdir}")
-		execute_command("/bin/chmod 0770 #{wwwdir}")
-		execute_command("/usr/sbin/chown #{options.username}:www #{wwwdir}/htdocs")
-		execute_command("/bin/chmod 0750 #{wwwdir}/htdocs")
+		create_dir(wwwdir, "root:#{options.username}", "0770")
+		create_dir("#{wwwdir}/etc", "#{options.username}:#{options.username}", "0750")
+		create_dir("#{wwwdir}/htdocs", "#{options.username}:www", "0750")
+		create_dir("#{wwwdir}/vhosts", "#{options.username}:www", "0750")
+		
+		# Create symlink in ~
 		execute_command("/bin/ln -s #{wwwdir} #{homedir}/www")
 
 		# Create mtree configs and point hostname
 		build_configs(mtree = true, bind = true)
-		puts "Bumpa SOA i /var/named/master/starkast.net och kör: rndc reload starkast.net"
+
+		# SOA and reload
+		puts "Glöm inte att: \n"
+		puts " - Bumpa SOA serial i /var/named/master/starkast.net"
+		puts " - rndc reload starkast.net"
 
 		# Quota
-		puts "Glöm inte sätta quota för #{options.username}"
+		puts " - sudo edquota #{options.username} (soft=1048576, hard=1310720)"
 
-		# Send a welcome mail to the user (CC to admin)
-		send_welcome_mail(options.username, passwd)
+		# Send a welcome mail to the user
+		if send_welcome_mail(options.username, passwd)
+			puts "\nWelcome mail sent to #{options.username} (#{options.email})."
+		else
+			puts "Error sending mail to #{options.username} (#{options.email})."
+		end
 		
 	else
 		puts "You should never se this."
