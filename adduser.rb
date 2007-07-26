@@ -183,7 +183,11 @@ ARGV.options do |opts|
 		gid = "-g #{options.username}"
 		group_add(options.username)
 	end
-	secondary_group = "-G #{options.group}" if options.respond_to?(:group)
+	if options.respond_to?(:group)
+		secondary_group = "-G users,#{options.group}"
+	else
+		secondary_group = "-G users"
+	end
 	shell = "-s #{find_shell(options.shell)}" if options.respond_to?(:shell)
 	login_class = "-L #{options.login_class}" if options.respond_to?(:login_class)
 
