@@ -32,7 +32,7 @@ def execute_command(command)
     end
 
     # remove mtree configs and hostname
-    if build_configs(mtree = true, bind = true)
+    if build_configs(mtree = true, bind = true, web = false)
       puts "Restored mtree configs and BIND config."
     end
 
@@ -82,10 +82,11 @@ def create_dir(dir, chown, chmod)
 	execute_command("/bin/chmod #{chmod} #{dir}")
 end
 
-def build_configs(mtree = false, bind = false)
+def build_configs(mtree = false, bind = false, web = false)
 	execute_command("/usr/local/bin/ruby /opt/create_mtree.rb -f /etc/supervise/home.mtree") if mtree
 	execute_command("/usr/local/bin/ruby /opt/create_mtree.rb -f /etc/supervise/www.mtree") if mtree
 	load("/opt/create_bind_users_include.rb", true) if bind
+	execute_command("/bin/cp /opt/templates/nginx.yml #{wwwdir}/etc") if web
 end
 
 def send_welcome_mail(username, passwd)
@@ -102,7 +103,7 @@ Du bör byta lösenord så fort som möjligt. Du gör det genom att köra
 kommandot passwd när du loggat in med SSH.
 
 Du loggar in genom att använda SSH/SCP/SFTP och ansluta till: 
-#{username}.starkast.net port 22.
+ssh.starkast.net port 22.
 
 Adressen http://#{username}.starkast.net har pekats till ditt utrymme, 
 det kan dock dröja upp till 20 minuter tills pekningen är genomförd.
@@ -114,7 +115,10 @@ Viktigt: Du får inte ladda upp stötande, pornografisk eller olagligt
 material på servern. Vi garanterar inte heller din data, håll egen 
 backup om den är viktig. 
 
-Om du undrar över något annat, ta en titt på http://wiki.starkast.net 
+På vår wiki finns det information om hur du använder de olika 
+tjänsterna. Du hittar den på http://wiki.starkast.net.
+
+Om du undrar över något annat, hoppa in i #starkast på QuakeNet
 eller skicka ett mail till kontakt@starkast.net.
 
 Mvh Starkast"
@@ -221,12 +225,15 @@ ARGV.options do |opts|
 		create_dir("#{wwwdir}/etc", "#{options.username}:#{options.username}", "0750")
 		create_dir("#{wwwdir}/htdocs", "#{options.username}:www", "0750")
 		create_dir("#{wwwdir}/vhosts", "#{options.username}:www", "0750")
+
+		# Create default web config
+
 		
 		# Create symlink in ~
 		execute_command("/bin/ln -s #{wwwdir} #{homedir}/www")
 
-		# Create mtree configs and point hostname
-		build_configs(mtree = true, bind = true)
+		# Create mtree and web configs and point hostname
+		build_configs(mtree = true, bind = true, web = wwwdir)
 
 		# SOA and reload
 		puts "Glöm inte att: \n"
