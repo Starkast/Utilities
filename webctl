@@ -1,0 +1,80 @@
+#!/usr/local/bin/ruby
+
+require 'optparse'
+
+host = ''
+action = {}
+ARGV << '-h' if ARGV.empty?
+ARGV.options do |opts|
+  opts.on('-r', '--reload', 'Reload configuration') { action[:reload] = true }
+  opts.on('-a', '--add HOSTNAME', 'Create new host and reload configuration') {|host| action[:add] = true}
+  opts.on('-d', '--delete HOSTNAME', 'Delete host and reload configuration') {|host| action[:delete] = true}
+  opts.on_tail('-h', '--help', 'Show this message') do
+    puts opts
+    exit
+  end
+  
+  opts.parse!
+end
+
+def path_for(host)
+  "/var/www/users/#{ENV['USER'].strip}/vhosts/#{host}"
+end
+
+def add(host)
+  if File.exist?(path_for(host))
+    $stderr.puts "#{host} already exist"
+    exit 1
+  else
+    Dir.mkdir(path_for(host))
+  end
+  reload
+  puts "#{host} added"
+rescue => e
+  Dir.rmdir(path_for(host))
+  $stderr.puts e
+  exit 1
+end
+
+def delete(host)
+  if File.symlink?(path_for(host))
+    File.delete(path_for(host))
+  else
+    Dir.rmdir(path_for(host))
+  end
+  reload
+  puts "#{host} deleted"
+rescue Errno::ENOENT
+  $stderr.puts "#{host} does not exist"
+  exit 1
+rescue => e
+  $stderr.puts e
+  exit 1
+end
+
+def reload
+  config_path = "/var/www/users/#{ENV['USER'].strip}/etc/nginx.yml"
+  config = ''
+  if File.readable?(config_path)
+    message = `cat #{config_path}|sudo -u www ruby /opt/nginx_generator.rb`
+  else
+    message = `echo ''|sudo -u www ruby /opt/nginx_generator.rb`
+  end
+  raise(message) if not message.strip.empty?
+  `sudo pkill -HUP -U root -x nginx`
+end
+
+host.strip!
+
+# If both -a and -b, use -a
+if action[:add]
+  add(host)
+elsif action[:delete]
+  delete(host)
+elsif action[:reload]
+begin
+  reload
+rescue => e
+  puts e
+end
+end
