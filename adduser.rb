@@ -86,7 +86,7 @@ def build_configs(mtree = false, bind = false, web = false)
 	execute_command("/usr/local/bin/ruby /opt/create_mtree.rb -f /etc/supervise/home.mtree") if mtree
 	execute_command("/usr/local/bin/ruby /opt/create_mtree.rb -f /etc/supervise/www.mtree") if mtree
 	load("/opt/create_bind_users_include.rb", true) if bind
-	execute_command("/bin/cp /opt/templates/nginx.yml #{wwwdir}/etc") if web
+	execute_command("/bin/cp /opt/templates/nginx.yml #{web}/etc") if web
 end
 
 def send_welcome_mail(username, passwd)
