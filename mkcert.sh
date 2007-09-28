@@ -36,6 +36,7 @@ if [ -f $KEYFILE ]; then
 fi
 
 $OPENSSL req -new -nodes -config $OPENSSLCONFIG -out $CERTREQ -keyout $KEYFILE || exit 2
+chmod 600 $KEYFILE $CERTREQ
 echo "\nPaste this CSR at the signing service:\n"
 cat $CERTREQ
 echo "\nThen save the signed key to $CERTFILE\n"
