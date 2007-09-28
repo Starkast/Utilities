@@ -1,0 +1,35 @@
+# Reload config with webctl -r
+
+# If this is true, Apache will handle everything (almost)
+use_apache: false
+
+#
+# EXAMPLE
+#
+
+#sites:
+#  blog.jage.se:
+#    # Redirect to jage.se
+#    rewrites:
+#      - ^(.*?)$ http://jage.se$1
+#
+#  jage.starkast.net:
+#    # Redirect to jage.se
+#    rewrites:
+#      - ^(.*?)$ http://jage.se$1
+#
+#  jage.se:
+#    # Send requests to this server
+#    upstream: 127.0.0.1:8191
+#    # But not for these directories
+#    upstream_excludes:
+#      - assets
+#      - tmp
+#      - dump
+#      - files
+#      - feeds
+#    # Treat files as plain if no valid extension name is used
+#    default_mime: text/plain
+#    # Ordinary redirect
+#    rewrites:
+#      - ^/files/2005-10-19/([^\.\?\/]+)$ /files/2005-10-19/?page=$1
