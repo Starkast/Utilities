@@ -226,14 +226,14 @@ ARGV.options do |opts|
 		create_dir("#{wwwdir}/htdocs", "#{options.username}:www", "0750")
 		create_dir("#{wwwdir}/vhosts", "#{options.username}:www", "0750")
 
-		# Create default web config
-
-		
 		# Create symlink in ~
 		execute_command("/bin/ln -s #{wwwdir} #{homedir}/www")
 
 		# Create mtree and web configs and point hostname
 		build_configs(mtree = true, bind = true, web = wwwdir)
+
+		# chown web config
+		execute_command("/usr/sbin/chown #{options.username}:#{options.username} #{wwwdir}/etc/nginx.yml")
 
 		# SOA and reload
 		puts "Glöm inte att: \n"
