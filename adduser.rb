@@ -221,7 +221,7 @@ ARGV.options do |opts|
 
 		# Create web directories
 		wwwdir = "/var/www/users/#{options.username}"
-		create_dir(wwwdir, "root:#{options.username}", "0775")
+		create_dir(wwwdir, "#{options.username}:www", "0750")
 		create_dir("#{wwwdir}/etc", "#{options.username}:#{options.username}", "0750")
 		create_dir("#{wwwdir}/htdocs", "#{options.username}:www", "0750")
 		create_dir("#{wwwdir}/vhosts", "#{options.username}:www", "0750")
