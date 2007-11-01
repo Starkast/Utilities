@@ -5,11 +5,13 @@ require 'yaml'
 require 'erb'
 
 # TODO
-# - Check /var/www/vhosts
 # - Rescue for files
 
 ## Settings
-$database = '/var/www/db/sites'
+$database     = '/var/www/db/sites'
+$template     = '/etc/nginx/user_template.erb'
+$user_index   = '/etc/nginx/users/index'
+$user_configs = "/etc/nginx/users/*.conf"
 
 module Phoo  
   class NginxGenerator
@@ -28,9 +30,9 @@ module Phoo
         @use_apache = true
       end
 
-      @use_php = false
-      if @data and @data['use_php']
-        @use_php = true
+      @php_procs = 2
+      if @data and @data['php_procs']
+        @php_procs = @data['php_procs'].to_i
       end
 
       if not @data or not @data['sites']
@@ -51,17 +53,19 @@ module Phoo
     
 
     def generate
-      @user = user
+      @user = self.user
 
       # Load database
       if File.exist?($database)
-        db_sites = Marshal.load(File.open($database) {|fp| fp.read }) || {}
+        db_sites = Marshal.load(File.read($database)) || {}
       else
         db_sites = {}
       end
 
       # Make sure the default htdocs is there
-      unless @data['sites'].include?('default')
+      # XXX ugly!
+      unless @data['sites'].include?('default') or 
+        @data['sites'].include?("#{user}.starkast.net")
         @data['sites']['default'] = {}
       end
 
@@ -119,12 +123,12 @@ module Phoo
       
       # Save Config
       File.open("/etc/nginx/users/#{user}.conf", 'w') do |fp|
-        fp.print ERB.new(File.read(template), nil, '>').result(binding)
+        fp.print ERB.new(File.read($template), nil, '>').result(binding)
       end
 
       # Update Index
-      File.open("/etc/nginx/users/index", 'w') do |fp|
-        Dir.glob("/etc/nginx/users/*.conf") do |u|
+      File.open($user_index, 'w') do |fp|
+        Dir.glob($user_configs) do |u|
           fp.puts "include #{u};"
         end
       end
@@ -132,10 +136,6 @@ module Phoo
       $stderr.puts e; exit 1
     end
     
-    def template
-      "/etc/nginx/user_template.erb"
-    end
-
     def user
       (ENV['WEBCTL_USER'] || ENV['SUDO_USER'] || `whoami`).strip
     end
@@ -144,7 +144,7 @@ module Phoo
   class Site
     
     attr_reader :name, :upstreams, :no_www, :use_apache,
-      :always_www, :auth_file, :rewrites,
+      :always_www, :auth_file, :rewrites, :autoindex,
       :upstreams_exclude, :default_mime
     
     def initialize(name, hash)
@@ -155,15 +155,17 @@ module Phoo
       else
         @name = name
       end
-      @upstreams   = hash['upstream']    || hash['upstreams'] || []
+
       @upstreams_exclude = hash['upstream_exclude'] || 
                            hash['upstream_excludes'] || []
-      @use_apache  = hash['use_apache']  || false
-      @no_www      = hash['no_www']      || false
-      @always_www  = hash['always_www']  || false
-      @auth_file   = hash['auth_file']   || false
-      @default_mime= hash['default_mime'] || false
-      @rewrites    = hash['rewrite']     || hash['rewrites'] || []
+      @upstreams    = hash['upstream']     || hash['upstreams'] || []
+      @use_apache   = hash['use_apache']   || false
+      @no_www       = hash['no_www']       || false
+      @always_www   = hash['always_www']   || false
+      @auth_file    = hash['auth_file']    || false
+      @default_mime = hash['default_mime'] || false
+      @rewrites     = hash['rewrite']      || hash['rewrites'] || []
+      @autoindex    = hash['autoindex']
     rescue => e
       $stderr.puts e; exit 1
     end
@@ -188,7 +190,6 @@ module Phoo
       end
       names.join(' ')
     end
-    
     
     def user
       (ENV['SUDO_USER'] || ENV['WEBCTL_USER'] || `whoami`).strip
