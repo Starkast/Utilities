@@ -19,6 +19,8 @@ use_apache: false
 #      - ^(.*?)$ http://jage.se$1
 #
 #  jage.se:
+#    # duh.se is also jage.se
+#    alias: duh.se
 #    # Send requests to this server
 #    upstream: 127.0.0.1:8191
 #    # But not for these directories
