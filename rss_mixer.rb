@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# $Id: rss_mixer.rb,v 1.10 2007/07/20 16:39:58 jage Exp $
+# $Id: rss_mixer.rb,v 1.11 2007/11/01 18:09:24 jage Exp $
 # 
 # Written by Johan Eckerström <johan@jage.se>
 #
@@ -17,19 +17,18 @@ html_output  = '/var/www/vhosts/starkast.net/index.html'
 rss_output   = '/var/www/vhosts/starkast.net/index.rss'
 erb_template = '/opt/templates/starkast_net.erb'
 home_url     = 'http://starkast.net/'
+config       = '/etc/rss_mixer.conf'
 
 entries = []
 domains = []
 coder = HTMLEntities.new
-feeds = %w[
-  jage.se/feed/
-  blog.dentarg.net/feed/
-  blog.tigermann.net/feed/
-  ludde.starkast.net/feed/
-  roger.starkast.net/feed/
-  erik.starkast.net/feed/
-  pixl.se/feed/
-]
+
+begin
+    load config
+    raise NoFeeds if feeds.length? == 0
+rescue LoadError
+    $stderr.puts 'Could not load configuration'; exit 1
+end
 
 # Helpers
 
