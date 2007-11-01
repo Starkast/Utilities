@@ -24,7 +24,7 @@ ARGV.options do |opts|
     exit
   end
   opts.parse!
-  if $config_path.empty?
+  if $config_path.strip.empty?
     puts opts
     exit 1
   end
