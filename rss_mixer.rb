@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# $Id: rss_mixer.rb,v 1.11 2007/11/01 18:09:24 jage Exp $
+# $Id: rss_mixer.rb,v 1.12 2007/11/01 18:33:46 jage Exp $
 # 
 # Written by Johan Eckerström <johan@jage.se>
 #
@@ -25,7 +25,7 @@ coder = HTMLEntities.new
 
 begin
     load config
-    raise NoFeeds if feeds.length? == 0
+    raise NoFeeds if $feeds.empty?
 rescue LoadError
     $stderr.puts 'Could not load configuration'; exit 1
 end
@@ -50,7 +50,7 @@ end
 
 
 attempts = Hash.new(0)
-feeds.each do |feed|
+$feeds.each do |feed|
   begin
     rss = SimpleRSS.parse(open("http://#{feed}"))
   rescue
