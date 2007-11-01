@@ -6,9 +6,9 @@ hidden = ['jage.roden.dev.imum.net',
           'bilder.ragnarsson.nu',
           'zatte.roden.dev.imum.net']
 
-# /var/www/vhosts* /var/www/users/*/htdocs /var/www/users/*/vhosts/*
-sites = Phoo::Sites.find('/var/www/{vhosts/*,users/*/{htdocs,vhosts/*}}')
-sites.delete_if {|i| hidden.include? i.domain }
+sites = Marshal.load(File.read('/var/www/db/sites')).collect {|key, site| key }
+sites.sort!
+sites.delete_if {|i| hidden.include? i }
 
 File.open('/var/www/htdocs/sites.html', 'w') do |f|
   f.puts '<html>
@@ -29,7 +29,7 @@ File.open('/var/www/htdocs/sites.html', 'w') do |f|
   f.puts "<ul>"
   sites.each do |site|
     f.puts <<EOF
-  <li><a href=\"http://#{site.domain}\">#{site.domain}</li>
+  <li><a href=\"http://#{site}\">#{site}</li>
 EOF
   end
   f.puts "</ul></body></html>"
