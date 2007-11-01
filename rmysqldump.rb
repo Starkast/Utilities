@@ -13,6 +13,7 @@
 #
 # Todo:
 #  - Add regexp capabilities for the database-specifications
+#  - Record elapsed time for backup
 
 begin
   require 'fileutils'
