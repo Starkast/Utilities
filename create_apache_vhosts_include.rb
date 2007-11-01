@@ -10,7 +10,7 @@ File.open('/var/www/conf/vhosts.conf', 'w') do |f|
   sites.each do |site|
   f.puts <<EOF
 # #{site.domain} by #{site.user}
-<VirtualHost 192.168.201.4:80>
+<VirtualHost 127.0.0.1:80>
   ServerName #{site.domain}
   ServerAlias www.#{site.domain}
   DocumentRoot #{site.path}
