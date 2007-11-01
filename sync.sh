@@ -1,3 +1,4 @@
+#!/bin/sh
 usage() {
 	echo 'Usage: sync ssh.starkast.net:/var/www'
 }
@@ -16,4 +17,5 @@ fi
 
 /usr/bin/sudo /usr/local/bin/rsync \
 	-az --delete -e 'ssh -i /home/sync/.ssh/sync -T' \
-	sync@${HOST}:${DIR} ${DIR}
+	--rsync-path=rsync_wrapper.sh \
+	sync@${HOST}:${DIR}/ ${DIR}/
