@@ -134,5 +134,4 @@ def checkquota(partion)
   end
 end
 
-partions = [ "/var/www", "/home" ]
-partions.each { |dir| checkquota(dir) }
+['/ustorage'].each { |dir| checkquota(dir) }
