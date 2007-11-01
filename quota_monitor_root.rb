@@ -6,7 +6,7 @@ Dir.entries(dir)[2..-1].each do |filename|
 	file = dir + filename
 	if not File::zero?(file)
 
-		puts "\nQuota-busar i " + filename.gsub(/_/,'/')[3..-7]
+		puts "\nQuota overrides in: " + filename.gsub(/_/,'/')[3..-7]
 		# Läs in och skriv ut användare 
 		File::open(file) do |file|
 			while line = file.gets
