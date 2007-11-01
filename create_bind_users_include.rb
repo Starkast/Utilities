@@ -2,7 +2,7 @@
 
 require '/opt/lib/phoo.rb'
 
-exclude = %w(im ftp secure drift)
+exclude = %w(im ftp secure drift wiki)
 
 
 File.open('/var/named/includes/starkast','w') do |f|
