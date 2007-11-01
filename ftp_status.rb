@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# $Id: ftp_status.rb,v 1.5 2007/04/02 07:18:03 jage Exp $
+# $Id: ftp_status.rb,v 1.6 2007/11/01 18:18:07 jage Exp $
 #
 # Written by Johan Eckerström <johan@jage.se>
 
