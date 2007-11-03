@@ -11,13 +11,16 @@ require 'erb'
 $database     = '/var/www/db/sites'
 $template     = '/etc/nginx/user_template.erb'
 $user_index   = '/etc/nginx/users/index'
-$user_configs = "/etc/nginx/users/*.conf"
+$user_configs = '/etc/nginx/users/*.conf'
+$sites_html   = '/var/www/htdocs/sites.html'
+$sites_template = '/opt/templates/sites.erb'
 
 module Phoo  
   class NginxGenerator
     def initialize
       load_config
       generate
+      create_stats
     rescue => e
       $stderr.puts e; exit 1
     end
@@ -53,8 +56,6 @@ module Phoo
     
 
     def generate
-      @user = self.user
-
       # Load database
       if File.exist?($database)
         db_sites = Marshal.load(File.read($database)) || {}
@@ -86,7 +87,7 @@ module Phoo
       # Check for domains that are busy by other or by the user
       @sites.each do |name, site|
         if db_sites[name]          
-          if site.server_name.split(' ') & db_sites[name].server_name.split(' ') and self.user != db_sites[name].user
+          if site.server_name.split(' ') & db_sites[name].server_name.split(' ') and user != db_sites[name].user
             @sites.delete(name)
             @data['sites'].delete(name)
             puts "#{site.server_name.split.first} is owned by someone else, skipped"
@@ -94,6 +95,13 @@ module Phoo
           end
         end
         db_sites[name] = site
+      end
+
+      # Find old sites
+      db_sites.each do |name, site|
+        if site.user == user and not @sites[name]
+          db_sites.delete name
+        end
       end
 
       domains = Hash.new([])
@@ -135,9 +143,22 @@ module Phoo
     rescue => e
       $stderr.puts e; exit 1
     end
+
+    def create_stats
+      sites = Marshal.load(File.read($database))
+      sites.delete_if { |key, i| i.hidden }
+      sites = sites.collect do |key, site|
+        key
+      end
+      sites.sort!
+
+      File.open($sites_html, 'w') do |fp|
+        fp.print ERB.new(File.read($sites_template), nil, '>').result(binding)
+      end
+    end
     
     def user
-      (ENV['WEBCTL_USER'] || ENV['SUDO_USER'] || `whoami`).strip
+      @user ||= (ENV['WEBCTL_USER'] || ENV['SUDO_USER'] || `whoami`).strip
     end
   end
   
@@ -145,7 +166,7 @@ module Phoo
     
     attr_reader :name, :upstreams, :no_www, :use_apache,
       :always_www, :auth_file, :rewrites, :autoindex,
-      :upstreams_exclude, :default_mime
+      :upstreams_exclude, :default_mime, :hidden
     
     def initialize(name, hash)
       @hash = hash || {}
@@ -166,6 +187,7 @@ module Phoo
       @default_mime = hash['default_mime'] || false
       @rewrites     = hash['rewrite']      || hash['rewrites'] || []
       @autoindex    = hash['autoindex']
+      @hidden       = hash['hidden']       || false
     rescue => e
       $stderr.puts e; exit 1
     end
@@ -192,7 +214,7 @@ module Phoo
     end
     
     def user
-      (ENV['SUDO_USER'] || ENV['WEBCTL_USER'] || `whoami`).strip
+      @user ||= (ENV['WEBCTL_USER'] || ENV['SUDO_USER'] || `whoami`).strip
     end
 
     def root
@@ -216,6 +238,7 @@ module Phoo
         self.name
       end
     end
+
   end
 end
 
