@@ -225,6 +225,7 @@ ARGV.options do |opts|
 		create_dir("#{wwwdir}/etc", "#{options.username}:#{options.username}", "0750")
 		create_dir("#{wwwdir}/htdocs", "#{options.username}:www", "0750")
 		create_dir("#{wwwdir}/vhosts", "#{options.username}:www", "0750")
+		create_dir("#{wwwdir}/tmp", "#{options.username}:#{options.username}", "0700")
 
 		# Create symlink in ~
 		execute_command("/bin/ln -s #{wwwdir} #{homedir}/www")
@@ -234,6 +235,19 @@ ARGV.options do |opts|
 
 		# chown web config
 		execute_command("/usr/sbin/chown #{options.username}:#{options.username} #{wwwdir}/etc/nginx.yml")
+
+    # Install php.ini
+    execute_command("/opt/install_php_ini.rb -u #{options.username}")
+
+    # Build the web config
+    execute_command("/usr/bin/sudo -u #{options.username} /opt/webctl -r")
+
+    # Spawn PHP
+    execute_command("/opt/spawn-php-fcgi.sh")
+
+    # Restart Nginx and Apache
+    execute_command("/usr/bin/pkill -U root -x nginx")
+    execute_command("/opt/apache_restart.sh")
 
 		# SOA and reload
 		puts "Glöm inte att: \n"
