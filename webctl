@@ -1,6 +1,8 @@
 #!/usr/local/bin/ruby
 
 require 'optparse'
+require '/opt/lib/phoo.rb'
+require 'socket'
 
 host = ''
 action = {}
@@ -21,6 +23,13 @@ def path_for(host)
   "/var/www/users/#{ENV['USER'].strip}/vhosts/#{host}"
 end
 
+def resolve(domain)
+  begin
+    IPSocket.getaddress(domain)
+  rescue
+  end
+end
+
 def add(host)
   if File.exist?(path_for(host))
     $stderr.puts "#{host} already exist"
@@ -30,6 +39,10 @@ def add(host)
   end
   reload
   puts "#{host} added"
+  ip = resolve(host)
+  unless ip == $default_ip
+    $stderr.puts "#{host} points to #{ip}, should point to #$default_ip"
+  end
 rescue => e
   Dir.rmdir(path_for(host))
   $stderr.puts e
