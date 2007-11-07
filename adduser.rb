@@ -246,7 +246,7 @@ ARGV.options do |opts|
     execute_command("/opt/spawn-php-fcgi.sh")
 
     # Restart Nginx and Apache
-    execute_command("/usr/bin/pkill -U root -x nginx")
+    execute_command("/usr/bin/pkill -HUP -U root -x nginx")
     execute_command("/opt/apache_restart.sh")
 
 		# SOA and reload
