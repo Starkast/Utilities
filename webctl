@@ -40,8 +40,11 @@ def add(host)
   reload
   puts "#{host} added"
   ip = resolve(host)
-  unless ip == $default_ip
+  if ip == $default_ip
+  elsif ip != nil
     $stderr.puts "#{host} points to #{ip}, should point to #$default_ip"
+  else
+    puts "#{host} should point to #$default_ip"
   end
 rescue => e
   Dir.rmdir(path_for(host))
