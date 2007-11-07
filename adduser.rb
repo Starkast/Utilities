@@ -19,7 +19,7 @@ def execute_command(command)
 		username = $user_created
 		$user_created = false
 		
-		puts "Faileed completing all steps to set up new user.\n"
+		puts "Failed completing all steps to set up new user.\n"
 	
     # remove mail alias
     if email_remove(username)
