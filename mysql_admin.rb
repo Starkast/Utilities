@@ -1,14 +1,14 @@
 #!/usr/local/bin/ruby
 
+# Todo
+# - send email to user
+
 require 'optparse'
 require 'ostruct'
 require '/opt/generate_password.rb'
 
 def execute_sql(sql)
-#  command = "/usr/local/bin/mysql -u root -p -e \"#{sql}\""
   command = "echo \"#{sql}\"|/usr/local/bin/mysql -u root -p"
-#  puts command
-#  exit
   result = `#{command}`.strip
   return result if $?.exitstatus == 0
   $stderr.puts "Failed to execute: #{command}"
@@ -36,8 +36,6 @@ def delete_user(username)
   sql = "DROP USER '#{username}'@'localhost';"
   puts "Deleted user #{username}" if execute_sql(sql)  
 end
-
-# Just do some checks
 
 # Specify the options and parse the arguments
 options = OpenStruct.new
