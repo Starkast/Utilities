@@ -41,7 +41,8 @@ def execute_command(command)
       puts "Restored mtree configs and BIND config."
     end
 
-    # remove mysql user?
+    # remove mysql user
+    execute_command("/opt/mysql_admin.rb -d #{username}")
 
     puts "\nPlease run: rmuser #{username}"
     exit 1
