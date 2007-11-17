@@ -16,6 +16,28 @@ def generate_password(l=10)
   return Array.new(l) { chars[rand(chars.size)] }.join
 end
 
+def rmuser(username)
+  # remove mail alias
+  if email_remove(username)
+    puts "Removed mail alias from #{$mail_alias_file}"
+  end
+
+  # remove wwwdir
+  if execute_command("/bin/rm -r /var/www/users/#{username}")
+    puts "Removed /var/www/users/#{username}"
+  end
+
+  # remove mtree configs and hostname
+  if build_configs(mtree = true, bind = true, web = false)
+    puts "Restored mtree configs and BIND config."
+  end
+
+  # remove mysql user
+  execute_command("/opt/mysql_admin.rb -d #{username}")
+
+  puts "\nPlease run: rmuser #{username}"
+end
+
 def execute_command(command)
   result = `#{command}`.strip
   return result if $?.exitstatus == 0
@@ -23,28 +45,8 @@ def execute_command(command)
   if $user_created
     username = $user_created
     $user_created = false
-    
     puts "Failed completing all steps to set up new user.\n"
-  
-    # remove mail alias
-    if email_remove(username)
-      puts "Removed mail alias from #{$mail_alias_file}"
-    end
-
-    # remove wwwdir
-    if execute_command("/bin/rm -r /var/www/users/#{username}")
-      puts "Removed /var/www/users/#{username}"
-    end
-
-    # remove mtree configs and hostname
-    if build_configs(mtree = true, bind = true, web = false)
-      puts "Restored mtree configs and BIND config."
-    end
-
-    # remove mysql user
-    execute_command("/opt/mysql_admin.rb -d #{username}")
-
-    puts "\nPlease run: rmuser #{username}"
+    rmuser(username)
     exit 1
   else
     exit 1
@@ -256,16 +258,16 @@ ARGV.options do |opts|
     # Build the web config
     execute_command("/usr/bin/sudo -u #{options.username} /opt/webctl -r")
 
+    # Create MySQL user
+    mysql_passwd = generate_password
+    execute_command("/opt/mysql_admin.rb -a #{options.username} -p #{mysql_passwd}")
+    
     # Spawn PHP
     execute_command("/opt/spawn-php-fcgi.sh")
 
     # Restart Nginx and Apache
     execute_command("/usr/bin/pkill -HUP -U root -x nginx")
     execute_command("/opt/apache_restart.sh")
-
-    # Create MySQL user
-    mysql_passwd = generate_password
-    execute_command("/opt/mysql_admin.rb -a #{options.username} -p #{mysql_passwd}")
 
     # SOA and reload
     puts "Glöm inte att: \n"
