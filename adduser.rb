@@ -139,7 +139,7 @@ eller skicka ett mail till kontakt@starkast.net.
 
 Mvh Starkast"
 
-  `echo "#{message}"|mail -s '#{subject}' #{username} -b root`
+  `echo "#{message}"|mail -b root -s '#{subject}' #{username}`
 end
 
 # Specify the options and parse the arguments
