@@ -1,7 +1,12 @@
 #!/usr/bin/env ruby
 
+#
+# Create MySQL user solution is unsecure
+#
+
 require 'optparse'
 require 'ostruct'
+#require '/opt/mysql_admin.rb'
 
 $mail_alias_file = '/etc/mail/aliases'
 
@@ -35,6 +40,8 @@ def execute_command(command)
     if build_configs(mtree = true, bind = true, web = false)
       puts "Restored mtree configs and BIND config."
     end
+
+    # remove mysql user?
 
     puts "\nPlease run: rmuser #{username}"
     exit 1
@@ -89,7 +96,7 @@ def build_configs(mtree = false, bind = false, web = false)
   execute_command("/bin/cp /opt/templates/nginx.yml #{web}/etc") if web
 end
 
-def send_welcome_mail(username, passwd)
+def send_welcome_mail(username, passwd, mysql_passwd)
   admin = ENV['SUDO_USER']
   subject = "[Starkast] Användare skapad på #{execute_command("hostname")}"
   message = "Hej,
@@ -111,6 +118,12 @@ det kan dock dröja upp till 20 minuter tills pekningen är genomförd.
 Du kan lagra 1 GiB i din hemkatalog.
 Kör kommandot quota för att se hur du ligger till med utrymmet.
 
+En användare till MySQL har skapats. Se inloggninsuppgifter nedan. Du 
+får skapa de databaser du behöver själv. Se http://wiki.starkast.net/MySQL
+
+Användarnamn: #{username}
+Lösenord: #{mysql_passwd}
+
 Viktigt: Du får inte ladda upp stötande, pornografisk eller olagligt 
 material på servern. Vi garanterar inte heller din data, håll egen 
 backup om den är viktig. 
@@ -123,7 +136,7 @@ eller skicka ett mail till kontakt@starkast.net.
 
 Mvh Starkast"
 
-  `echo "#{message}"|mail -s '#{subject}' #{username}`
+  `echo "#{message}"|mail -s '#{subject}' #{username} -b root`
 end
 
 # Specify the options and parse the arguments
@@ -249,6 +262,10 @@ ARGV.options do |opts|
     execute_command("/usr/bin/pkill -HUP -U root -x nginx")
     execute_command("/opt/apache_restart.sh")
 
+    # Create MySQL user
+    mysql_passwd = generate_password
+    execute_command("/opt/mysql_admin.rb -a #{options.username} -p #{mysql_passwd}")
+
     # SOA and reload
     puts "Glöm inte att: \n"
     puts " - Bumpa SOA serial i /var/named/master/starkast.net"
@@ -258,7 +275,7 @@ ARGV.options do |opts|
     puts " - sudo edquota #{options.username} (soft=1048576, hard=1310720)"
 
     # Send a welcome mail to the user
-    if send_welcome_mail(options.username, passwd)
+    if send_welcome_mail(options.username, passwd, mysql_passwd)
       puts "\nWelcome mail sent to #{options.username} (#{options.email})."
     else
       puts "Error sending mail to #{options.username} (#{options.email})."
