@@ -166,10 +166,10 @@ module Phoo
     
     attr_reader :name, :upstreams, :no_www, :use_apache,
       :always_www, :auth_file, :rewrites, :autoindex,
-      :upstreams_exclude, :default_mime, :hidden
+      :upstreams_exclude, :default_mime, :hidden, :fastcgi
     
-    def initialize(name, hash)
-      @hash = hash || {}
+    def initialize(name, hash = {})
+      @hash = (hash ||= {})
 
       if name == 'default'
         @name = "#{user}.starkast.net"
@@ -180,6 +180,7 @@ module Phoo
       @upstreams_exclude = hash['upstream_exclude'] || 
                            hash['upstream_excludes'] || []
       @upstreams    = hash['upstream']     || hash['upstreams'] || []
+      @fastcgi      = hash['fastcgi']      || false
       @use_apache   = hash['use_apache']   || false
       @no_www       = hash['no_www']       || false
       @always_www   = hash['always_www']   || false
