@@ -3,6 +3,10 @@ usage() {
 	echo 'Usage: sync ssh.starkast.net:/var/www'
 }
 
+if ! [ "X`whoami`" == X"root" ]; then
+	echo "You're not root"
+	exit 1
+fi
 
 if [ X"${1}" == X"" ]; then
 	usage; exit 1
