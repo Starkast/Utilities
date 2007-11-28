@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+# $Id: rmysqldump.rb,v 1.7 2007/11/28 11:48:22 jage Exp $
 #
 # Written by Johan Eckerström <johan@jage.se> 
 # 
@@ -153,9 +154,21 @@ module MySQL
         end
       end
       message  = "#{@databases.successes.length} databases dumped successfully"
-      message += ", #{@databases.skipped.length} skipped" if @databases.skipped.length > 0
+      if @databases.skipped.length > 0
+        message += ", #{@databases.skipped.length} skipped" 
+      end
       Syslog.info(message)
-      Syslog.err("#{@databases.failed.length} databases failed") if @databases.failed.length > 0
+
+      # Inform about failures
+      if @databases.failed.length > 0
+        error_message = 'Failed databases:'
+        @databases.failed.each do |db|
+          error_message << " #{db},"
+        end
+        error_message.gsub!(/,$/, '.')
+        Syslog.err(error_message) 
+      end
+
       Syslog.close
     end
 
