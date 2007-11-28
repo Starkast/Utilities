@@ -163,7 +163,7 @@ module MySQL
 
     def failure(message)
       $stderr.puts message
-      Syslog.error(message) if Syslog.opened?
+      Syslog.err(message) if Syslog.opened?
     end
 
     def mysqldump_working?
