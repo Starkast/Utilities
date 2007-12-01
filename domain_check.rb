@@ -1,8 +1,12 @@
 #!/usr/bin/env ruby
 
-require '/opt/lib/phoo.rb'
-require 'rubygems'
-require 'net/dns/resolver'
+begin
+  require '/opt/lib/phoo.rb'
+  require 'rubygems'
+  require 'net/dns/resolver'
+rescue LoadError
+  $stderr.puts 'Could not load required libraries'; exit 1
+end
 
 starkast_hosts = %w(
   beaver.starkast.net
