@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# $Id: ftp_status.rb,v 1.6 2007/11/01 18:18:07 jage Exp $
+# $Id: ftp_status.rb,v 1.7 2007/12/02 12:16:12 jage Exp $
 #
 # Written by Johan Eckerström <johan@jage.se>
 
@@ -24,11 +24,12 @@ if not File.exist?(cache_file) or ((Time.now.to_i - File.new(cache_file).mtime.t
   c[:total_files]  = `find /var/www/ftp -type f|wc -l`.to_i
   c[:mirror_syncs] = Dir.glob('/var/log/mirror.*').collect do |log_file|
     s = `tail -n 1 #{log_file}`.split(',')
+    next if s.length != 4
     { :status     => s[0],
       :path       => s[1],
       :host       => s[2],
       :updated_on => s[3] }
-  end
+  end.compact!
   # Save Cache
   File.open(cache_file, 'w') do |cache_f|
     cache_f.print Marshal.dump(c)
