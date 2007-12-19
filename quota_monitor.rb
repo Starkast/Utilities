@@ -41,9 +41,8 @@ Varje konto har en gräns för mängden lagrad data, denna gräns är uppdelad i två
 delar, \"soft quota\" och \"hard quota\".
 
 \"Soft quota\": Tillfälligt överskridbar gräns. Överskrider man denna startas 
-en räknare, när denna gått i *7 dygn* kommer filskapande förhindras. Du kommer 
-inte kunna ladda upp någon data förräns mängden lagrad data minskats till under 
-denna gräns.
+en räknare, när denna gått i *7 dygn* kommer filskapande förhindras tills det att 
+du rensat.
 
 \"Hard quota\": Maximigräns, det går *aldrig* att överskrida denna."
 
