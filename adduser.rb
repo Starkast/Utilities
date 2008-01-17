@@ -263,7 +263,8 @@ ARGV.options do |opts|
     execute_command("/opt/mysql_admin.rb -a #{options.username} -p #{mysql_passwd}")
     
     # Spawn PHP
-    execute_command("/opt/spawn-php-fcgi.sh")
+    # does not work good enough, run manually
+    #execute_command("/opt/spawn-php-fcgi.sh")
 
     # Restart Nginx and Apache
     execute_command("/usr/bin/pkill -HUP -U root -x nginx")
@@ -273,6 +274,9 @@ ARGV.options do |opts|
     puts "Glöm inte att: \n"
     puts " - Bumpa SOA serial i /var/named/master/starkast.net"
     puts " - rndc reload starkast.net"
+
+    # Spawn PHP
+    puts " - sudo /opt/spawn-php-fcgi.sh"
 
     # Quota
     puts " - sudo edquota #{options.username} (soft=1048576, hard=1310720)"
