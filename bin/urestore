@@ -10,8 +10,8 @@ check () {
 
 list () {
 	ssh genau.starkast.net "(
-	cd /backup/`hostname -s`/snapshots/
-	for i in */phoo/$LOCAL_PATH; do
+	cd /backup/$HOSTNAME/snapshots/
+	for i in */$HOSTNAME/$LOCAL_PATH; do
 		echo "'$i'" | sed 's/\// /' | awk '{ print "'$1'" }'
 	done)" 2>/dev/null
 	if [ $? -ne 0 ]; then
@@ -86,8 +86,9 @@ while getopts "rdlt:x:vh" opt; do
 	esac
 done
 
+HOSTNAME=`hostname -s`
 LOCAL_PATH=`readlink -f $PWD`
-BACKUP_PATH="/backup/`hostname -s`/snapshots/$TIME/`hostname -s`/"
+BACKUP_PATH="/backup/$HOSTNAME/snapshots/$TIME/$HOSTNAME/"
 REMOTE_PATH="$BACKUP_PATH/$LOCAL_PATH"
 
 if [ $# -eq 0 ]; then
