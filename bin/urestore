@@ -1,0 +1,69 @@
+set -o posix
+
+# Todo
+#  Error handling when a backup isn't there
+#  Error handling when a directory isn't there
+#  Error handling when a backup is ongoing and no restore can be done
+
+restore () {
+	rsync -Ouaz${VERBOSE} \
+	--include "$EXPRESSION" \
+	--include "- *" \
+	genau.starkast.net:$BACKUP_PATH/ $REAL_PATH/ 2>/dev/null
+	if [ ! $? -eq 0 ]; then
+		echo "ERROR - Restore didn't finish"
+		exit 1
+	fi
+}
+
+diff () {
+	rsync -Onuaz \
+	--out-format="%n" \
+	--include "$EXPRESSION" \
+	--include "- *" \
+	genau.starkast.net:$BACKUP_PATH/ $REAL_PATH/ 2>/dev/null
+	if [ ! $? -eq 0 ]; then
+		echo "diff aborted ..."
+		exit 1
+	fi
+}
+
+usage () {
+	cat << __EOT
+Usage: `basename $0` action [-t time] [-x expression] [-v]
+Actions: -r, Restore
+         -d, Diff
+Options  -t  daily.[0-6] | weekly.[0-3] | monthly.[0-1]
+         -x  expression
+	 -v, verbose
+__EOT
+}
+
+
+TIME='daily.0'
+EXPRESSION='+ *'
+VERBOSE=""
+rflag=0
+dflag=0
+vflag=0
+
+while getopts "rdt:x:v" opt; do
+	case $opt in
+	r)	rflag=1 ;;
+	d)	dflag=1 ;;
+	v)	VERBOSE="v" ;;
+	t)	TIME=${OPTARG}  ;;
+	x)	EXPRESSION=${OPTARG} ;;
+	*)	usage ;;
+	esac
+done
+
+REAL_PATH=`readlink -f $PWD`
+BACKUP_PATH="/backup/`hostname -s`/snapshots/$TIME/`hostname -s`/$REAL_PATH"
+
+if [ $# -eq 0 ]; then
+	usage
+fi
+
+[ $rflag -eq 1 ] && restore && exit
+[ $dflag -eq 1 ] && diff && exit
