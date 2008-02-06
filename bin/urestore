@@ -1,29 +1,52 @@
 set -o posix
 
 # Todo
-#  Error handling when a backup isn't there
-#  Error handling when a directory isn't there
 #  Error handling when a backup is ongoing and no restore can be done
 
+check () {
+	ssh genau.starkast.net ls `dirname $BACKUP_PATH` >/dev/null 2>/dev/null
+	echo $?
+}
+
+list () {
+	ssh genau.starkast.net "(
+	cd /backup/`hostname -s`/snapshots/
+	for i in */phoo/$LOCAL_PATH; do
+		echo "'$i'" | sed 's/\// /' | awk '{ print "'$1'" }'
+	done)" 2>/dev/null
+	if [ $? -ne 0 ]; then
+		echo "error while checking for backup"
+		exit 1
+	fi
+}
+
 restore () {
+	if [ `check` -ne 0 ]; then
+		echo "no backup found for this date" 1>&2
+		exit 1
+	fi
 	rsync -Ouaz${VERBOSE} \
 	--include "$EXPRESSION" \
 	--include "- *" \
-	genau.starkast.net:$BACKUP_PATH/ $REAL_PATH/ 2>/dev/null
-	if [ ! $? -eq 0 ]; then
-		echo "ERROR - Restore didn't finish"
+	genau.starkast.net:$REMOTE_PATH/ $LOCAL_PATH/ 2>/dev/null
+	if [ $? -ne 0 -a $? -ne 23 ]; then
+		echo "Something went wrong, error $?" 1>&2
 		exit 1
 	fi
 }
 
 diff () {
+	if [ `check` -ne 0 ]; then
+		echo "no backup found for this date" 1>&2
+		exit 1
+	fi
 	rsync -Onuaz \
 	--out-format="%n" \
 	--include "$EXPRESSION" \
 	--include "- *" \
-	genau.starkast.net:$BACKUP_PATH/ $REAL_PATH/ 2>/dev/null
-	if [ ! $? -eq 0 ]; then
-		echo "diff aborted ..."
+	genau.starkast.net:$REMOTE_PATH/ $LOCAL_PATH/ 2>/dev/null
+	if [ $? -ne 0 -a $? -ne 23 ]; then
+		echo "Something went wrong, error $?" 1>&2
 		exit 1
 	fi
 }
@@ -31,11 +54,13 @@ diff () {
 usage () {
 	cat << __EOT
 Usage: `basename $0` action [-t time] [-x expression] [-v]
-Actions: -r, Restore
-         -d, Diff
-Options  -t  daily.[0-6] | weekly.[0-3] | monthly.[0-1]
-         -x  expression
-	 -v, verbose
+Actions: -r			Restore from backup
+         -d 			Difference from backup
+	 -l			List backups of this directory
+	 -h			Shows this help
+Options: -t  TIME 		Time in the past, list times with -l
+         -x  EXPRESSION		Only include files matching EXPRESSION
+	 -v 			Verbose output
 __EOT
 }
 
@@ -46,20 +71,24 @@ VERBOSE=""
 rflag=0
 dflag=0
 vflag=0
+lflag=0
 
-while getopts "rdt:x:v" opt; do
+while getopts "rdlt:x:vh" opt; do
 	case $opt in
 	r)	rflag=1 ;;
 	d)	dflag=1 ;;
+	l)	lflag=1 ;;
 	v)	VERBOSE="v" ;;
 	t)	TIME=${OPTARG}  ;;
 	x)	EXPRESSION=${OPTARG} ;;
+	h)	usage ;;
 	*)	usage ;;
 	esac
 done
 
-REAL_PATH=`readlink -f $PWD`
-BACKUP_PATH="/backup/`hostname -s`/snapshots/$TIME/`hostname -s`/$REAL_PATH"
+LOCAL_PATH=`readlink -f $PWD`
+BACKUP_PATH="/backup/`hostname -s`/snapshots/$TIME/`hostname -s`/"
+REMOTE_PATH="$BACKUP_PATH/$LOCAL_PATH"
 
 if [ $# -eq 0 ]; then
 	usage
@@ -67,3 +96,4 @@ fi
 
 [ $rflag -eq 1 ] && restore && exit
 [ $dflag -eq 1 ] && diff && exit
+[ $lflag -eq 1 ] && list && exit
