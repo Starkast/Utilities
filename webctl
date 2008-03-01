@@ -88,9 +88,9 @@ if action[:add]
 elsif action[:delete]
   delete(host)
 elsif action[:reload]
-begin
-  reload
-rescue => e
-  puts e
-end
+  begin
+    reload
+  rescue => e
+    puts e
+  end
 end
