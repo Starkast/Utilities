@@ -17,7 +17,7 @@ fi
 # Not the output syntax, important for status pages
 
 mirror_sync() {
-	rsync -azv --delete --force ${HOST}::dflysnap/  ./
+	rsync -azv --exclude '.*' --delete --force ${HOST}::dflysnap/  ./ 2>/dev/null
 }
 
 TRY=0
@@ -29,9 +29,7 @@ mirror_wrapper() {
 		(cd iso-images/; md5 * > md5.txt)
 		exit 0
 	else
-		# $? -gt 6 means that if the error code isn't really bad,
-		# it'll try again
-		if [ $TRY -lt 6 -a $? -gt 6 ]; then
+		if [ $TRY -lt 3 ]; then
 			mirror_wrapper
 		else
 			echo "NOTOK,/pub/DragonFly,$HOST,`date`"

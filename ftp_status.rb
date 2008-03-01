@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# $Id: ftp_status.rb,v 1.7 2007/12/02 12:16:12 jage Exp $
+# $Id: ftp_status.rb,v 1.8 2008/03/01 17:22:52 jage Exp $
 #
 # Written by Johan Eckerström <johan@jage.se>
 
@@ -29,7 +29,7 @@ if not File.exist?(cache_file) or ((Time.now.to_i - File.new(cache_file).mtime.t
       :path       => s[1],
       :host       => s[2],
       :updated_on => s[3] }
-  end.compact!
+  end.compact
   # Save Cache
   File.open(cache_file, 'w') do |cache_f|
     cache_f.print Marshal.dump(c)

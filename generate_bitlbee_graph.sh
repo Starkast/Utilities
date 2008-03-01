@@ -1,10 +1,10 @@
-# $Id: generate_bitlbee_graph.sh,v 1.5 2007/11/01 18:01:01 jage Exp $
+# $Id: generate_bitlbee_graph.sh,v 1.6 2008/03/01 17:22:52 jage Exp $
 #
 # Written by Johan Eckerström <johan@jage.se>
 
 
-DEST_HOME=/var/www/vhosts/im.starkast.net/statistics
-BACK_RRD=/home/jage/tmp/proc_bitlbee.rrd
+DEST_HOME=/var/www/services/im/statistics
+BACK_RRD=/var/www/symon/misc/beaver_proc_bitlbee.rrd
 RRD_HOME=/var/www/symon/rrds/phoo
 
 plot_proc() {
@@ -66,3 +66,4 @@ plot_proc bitlbee bitlbee_last_day -86400 800 200
 
 # Small
 plot_proc bitlbee small_bitlbee_last_day -86400 400 100
+plot_proc bitlbee small_bitlbee_last_month -2419200 400 100
