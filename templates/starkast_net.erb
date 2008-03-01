@@ -36,7 +36,7 @@
 		<h3><%= age_in_swedish_words(latest_date).capitalize %></h3>
 		<ul>
 	<% end %>
-		<li><a href="<%= entry.link %> "><%= entry.title %></a> (<a
+		<li><a href="<%= entry.link %> "><%= coder.decode(entry.title) %></a> (<a
 			class="sitelink" 
 			href="http://<%= entry.domain %>"><%= entry.domain %></a>)
 		</li> 
