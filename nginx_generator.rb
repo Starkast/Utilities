@@ -36,6 +36,7 @@ module Phoo
       @php_procs = 2
       if @data and @data['php_procs']
         @php_procs = @data['php_procs'].to_i
+        @php_disabled = (@php_procs == 0)
       end
 
       if not @data or not @data['sites']
