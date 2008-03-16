@@ -2,6 +2,8 @@ set -o posix
 
 # Todo
 #  Error handling when a backup is ongoing and no restore can be done
+#  Don't display "skipping non-regular file ..."
+#  Handle permission errors better
 
 check () {
 	ssh genau.starkast.net ls `dirname $BACKUP_PATH` >/dev/null 2>/dev/null
@@ -10,7 +12,7 @@ check () {
 
 list () {
 	ssh genau.starkast.net "(
-	cd /backup/$HOSTNAME/snapshots/
+	cd /storage/backup/.zfs/snapshot
 	for i in */$HOSTNAME/$LOCAL_PATH; do
 		echo "'$i'" | sed 's/\// /' | awk '{ print "'$1'" }'
 	done)" 2>/dev/null
@@ -30,7 +32,7 @@ restore () {
 	--include "- *" \
 	genau.starkast.net:$REMOTE_PATH/ $LOCAL_PATH/ 2>/dev/null
 	if [ $? -ne 0 -a $? -ne 23 ]; then
-		echo "Something went wrong, error $?" 1>&2
+		echo "something went wrong, error $?" 1>&2
 		exit 1
 	fi
 }
@@ -65,7 +67,7 @@ __EOT
 }
 
 
-TIME='daily.0'
+TIME=`date +%y%m%d`
 EXPRESSION='+ *'
 VERBOSE=""
 rflag=0
@@ -88,7 +90,7 @@ done
 
 HOSTNAME=`hostname -s`
 LOCAL_PATH=`readlink -f $PWD`
-BACKUP_PATH="/backup/$HOSTNAME/snapshots/$TIME/$HOSTNAME/"
+BACKUP_PATH="/storage/backup/.zfs/snapshot/$TIME/$HOSTNAME"
 REMOTE_PATH="$BACKUP_PATH/$LOCAL_PATH"
 
 if [ $# -eq 0 ]; then
