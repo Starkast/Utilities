@@ -2,6 +2,7 @@
 
 require 'erb'
 require 'optparse'
+require 'fileutils'
 
 $user = ''
 ARGV << '-h' if ARGV.empty?
@@ -24,6 +25,7 @@ begin
   File.open($path, 'w') do |fp|
     fp.print ERB.new(File.read($template), nil, '>').result(binding)
   end
+  FileUtils.chown($user, $user, $path)
 rescue => e
   $stderr.puts e
   exit 1
