@@ -1,7 +1,9 @@
 #!/usr/bin/env ruby
 
 #
-# Create MySQL user solution is unsecure
+# - Create MySQL user solution is unsecure
+# - If you enter wrong MySQL password two times not all text that
+# should be printed is (e.g. please run rmuser)
 #
 
 require 'optparse'
