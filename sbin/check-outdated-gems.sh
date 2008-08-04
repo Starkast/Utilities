@@ -6,5 +6,5 @@ tmpfile=`mktemp`
 `gem outdated > $tmpfile`
 
 if [ -s $tmpfile ]; then
-	cat $tmpfile | mail -s '[Phoo] Ruby Gems updates' root
+	cat $tmpfile | mail -s '[`hostname -s`] Ruby Gems updates' root
 fi
