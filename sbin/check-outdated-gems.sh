@@ -1,7 +1,8 @@
 #!/bin/sh
 PATH=/usr/local/bin:/usr/local/sbin:.:/bin:/sbin:/usr/bin:/usr/sbin:/usr/X11R6/bin:/opt/bin:/opt/sbin
 
-tmpfile=`mktemp`
+# This should work on both FreeBSD and OpenBSD
+tmpfile=`mktemp -t gems.XXXXXXXXXXXX`
 
 `gem outdated > $tmpfile`
 
