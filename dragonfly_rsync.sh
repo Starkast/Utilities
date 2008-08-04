@@ -3,7 +3,7 @@
 HOST=chlamydia.fs.ei.tum.de
 
 if [ `whoami` != 'mirror' ];then
-	echo 'Must be run my the user "mirror"'
+	echo 'Must be run by the user "mirror"'
 	exit 1
 fi
 
@@ -26,6 +26,7 @@ mirror_wrapper() {
 	mirror_sync
 	if [ $? -eq 0 ]; then
 		echo "OK,/pub/DragonFly,$HOST,`date`"
+		find . -type d \! -exec chmod 755 {} \;
 		(cd iso-images/; md5 * > md5.txt)
 		exit 0
 	else
