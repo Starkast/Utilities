@@ -188,7 +188,7 @@ module Phoo
       @auth_file    = hash['auth_file']    || false
       @default_mime = hash['default_mime'] || false
       @rewrites     = hash['rewrite']      || hash['rewrites'] || []
-      @autoindex    = hash['autoindex']
+      @autoindex    = hash['autoindex'] == false ? false : true # Default to true
       @hidden       = hash['hidden']       || false
     rescue => e
       $stderr.puts e; exit 1
