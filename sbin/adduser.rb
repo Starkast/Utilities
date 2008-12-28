@@ -268,9 +268,8 @@ ARGV.options do |opts|
     # does not work good enough, run manually
     #execute_command("/opt/spawn-php-fcgi.sh")
 
-    # Restart Nginx and Apache
+    # Restart Nginx
     execute_command("/usr/bin/pkill -HUP -U root -x nginx")
-    execute_command("/opt/sbin/apache_restart.sh")
 
     # SOA and reload
     puts "Glöm inte att: \n"
