@@ -72,9 +72,9 @@ def reload
   config_path = "/var/www/users/#{ENV['USER'].strip}/etc/nginx.yml"
   config = ''
   if File.readable?(config_path)
-    message = `cat #{config_path}|sudo -u www ruby /opt/nginx_generator.rb`
+    message = `cat #{config_path}|sudo -u www ruby /opt/libexec/nginx_generator.rb`
   else
-    message = `echo ''|sudo -u www ruby /opt/nginx_generator.rb`
+    message = `echo ''|sudo -u www ruby /opt/libexec/nginx_generator.rb`
   end
   raise(message) if not message.strip.empty?
   `sudo pkill -HUP -U root -x nginx`

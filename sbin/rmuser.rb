@@ -23,7 +23,7 @@ def rmuser(username)
   end
 
   # remove mysql user
-  execute_command("/opt/mysql_admin.rb -d #{username}")
+  execute_command("/opt/sbin/mysql_admin.rb -d #{username}")
 
   puts "\nPlease run: rmuser #{username}"
 end
@@ -47,9 +47,9 @@ def email_remove(username)
 end
 
 def build_configs(mtree = false, bind = false, web = false)
-  execute_command("/usr/local/bin/ruby /opt/create_mtree.rb -f /etc/supervise/home.mtree") if mtree
-  execute_command("/usr/local/bin/ruby /opt/create_mtree.rb -f /etc/supervise/www.mtree") if mtree
-  load("/opt/create_bind_users_include.rb", true) if bind
+  execute_command("/usr/local/bin/ruby /opt/sbin/create_mtree.rb -f /etc/supervise/home.mtree") if mtree
+  execute_command("/usr/local/bin/ruby /opt/sbin/create_mtree.rb -f /etc/supervise/www.mtree") if mtree
+  load("/opt/sbin/create_bind_users_include.rb", true) if bind
   execute_command("/bin/cp /opt/templates/nginx.yml #{web}/etc") if web
 end
 

@@ -35,7 +35,7 @@ def rmuser(username)
   end
 
   # remove mysql user
-  execute_command("/opt/mysql_admin.rb -d #{username}")
+  execute_command("/opt/sbin/mysql_admin.rb -d #{username}")
 
   puts "\nPlease run: rmuser #{username}"
 end
@@ -95,9 +95,9 @@ def create_dir(dir, chown, chmod)
 end
 
 def build_configs(mtree = false, bind = false, web = false)
-  execute_command("/usr/local/bin/ruby /opt/create_mtree.rb -f /etc/supervise/home.mtree") if mtree
-  execute_command("/usr/local/bin/ruby /opt/create_mtree.rb -f /etc/supervise/www.mtree") if mtree
-  load("/opt/create_bind_users_include.rb", true) if bind
+  execute_command("/usr/local/bin/ruby /opt/sbin/create_mtree.rb -f /etc/supervise/home.mtree") if mtree
+  execute_command("/usr/local/bin/ruby /opt/sbin/create_mtree.rb -f /etc/supervise/www.mtree") if mtree
+  load("/opt/sbin/create_bind_users_include.rb", true) if bind
   execute_command("/bin/cp /opt/templates/nginx.yml #{web}/etc") if web
 end
 
@@ -255,14 +255,14 @@ ARGV.options do |opts|
     execute_command("/usr/sbin/chown #{options.username}:#{options.username} #{wwwdir}/etc/nginx.yml")
 
     # Install php.ini
-    execute_command("/opt/install_php_ini.rb -u #{options.username}")
+    execute_command("/opt/sbin/install_php_ini.rb -u #{options.username}")
 
     # Build the web config
-    execute_command("/usr/bin/sudo -u #{options.username} /opt/webctl -r")
+    execute_command("/usr/bin/sudo -u #{options.username} /opt/bin/webctl -r")
 
     # Create MySQL user
     mysql_passwd = generate_password
-    execute_command("/opt/mysql_admin.rb -a #{options.username} -p #{mysql_passwd}")
+    execute_command("/opt/sbin/mysql_admin.rb -a #{options.username} -p #{mysql_passwd}")
     
     # Spawn PHP
     # does not work good enough, run manually
@@ -270,7 +270,7 @@ ARGV.options do |opts|
 
     # Restart Nginx and Apache
     execute_command("/usr/bin/pkill -HUP -U root -x nginx")
-    execute_command("/opt/apache_restart.sh")
+    execute_command("/opt/sbin/apache_restart.sh")
 
     # SOA and reload
     puts "Glöm inte att: \n"
@@ -278,7 +278,7 @@ ARGV.options do |opts|
     puts " - rndc reload starkast.net"
 
     # Spawn PHP
-    puts " - sudo /opt/spawn-php-fcgi.sh"
+    puts " - sudo /opt/sbin/spawn-php-fcgi.sh"
 
     # Quota
     puts " - sudo edquota #{options.username} (soft=1048576, hard=1310720)"

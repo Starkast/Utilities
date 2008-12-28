@@ -5,7 +5,7 @@
 
 require 'optparse'
 require 'ostruct'
-require '/opt/generate_password.rb'
+require '/opt/sbin/generate_password.rb'
 
 def execute_sql(sql)
   command = "echo \"#{sql}\"|/usr/local/bin/mysql -u root -p"

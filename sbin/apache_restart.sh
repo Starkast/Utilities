@@ -3,7 +3,7 @@
 PATH=/usr/local/bin:/usr/local/sbin:.:/bin:/sbin:/usr/bin:/usr/sbin
 
 echo 'Creating vhosts configuration' 
-sudo /usr/local/bin/ruby /opt/create_apache_vhosts_include.rb
+sudo /usr/local/bin/ruby /opt/sbin/create_apache_vhosts_include.rb
 if [ $? -ne 0 ]; then
 	echo "Apache vhosts creation failed"
 	exit 1
