@@ -1,0 +1,11 @@
+--- phpMyAdmin-2.10.0.2-all-languages-utf-8-only/lang/english-utf-8.inc.php	Fri Mar  2 18:39:49 2007
++++ /var/www/secure/mysql/lang/english-utf-8.inc.php	Fri Apr 13 13:31:09 2007
+@@ -178,7 +178,7 @@
+ $strCreateUserDatabase = 'Database for user';
+ $strCreateUserDatabaseName = 'Create database with same name and grant all privileges';
+ $strCreateUserDatabaseNone = 'None';
+-$strCreateUserDatabaseWildcard = 'Grant all privileges on wildcard name (username_%)';
++$strCreateUserDatabaseWildcard = 'Grant all privileges on wildcard name (username%)';
+ $strCreationDates = 'Creation/Update/Check dates';
+ $strCriteria = 'Criteria';
+ $strCroatian = 'Croatian';

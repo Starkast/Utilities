@@ -1,0 +1,11 @@
+--- phpMyAdmin-2.10.0.2-all-languages-utf-8-only/server_privileges.php	Fri Mar  2 18:39:49 2007
++++ /var/www/secure/mysql/server_privileges.php	Fri Apr 13 13:30:37 2007
+@@ -846,7 +846,7 @@
+                     $sql_query .= $q;
+                     PMA_DBI_try_query($q) or PMA_mysqlDie(PMA_DBI_getError(), $sql_query);
+                 } elseif ($createdb == 2) {
+-                    $q = 'GRANT ALL PRIVILEGES ON ' . PMA_backquote(PMA_sqlAddslashes($username) . '\_%') . '.* TO \'' . PMA_sqlAddslashes($username) . '\'@\'' . $hostname . '\';';
++                    $q = 'GRANT ALL PRIVILEGES ON ' . PMA_backquote(PMA_sqlAddslashes($username) . '%') . '.* TO \'' . PMA_sqlAddslashes($username) . '\'@\'' . $hostname . '\';';
+                     $sql_query .= $q;
+                     PMA_DBI_try_query($q) or PMA_mysqlDie(PMA_DBI_getError(), $sql_query);
+                 }
