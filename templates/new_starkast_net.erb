@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>Starkast.net</title>
+  <link href="http://phoo.starkast.net/stylesheets/default.css" rel="stylesheet" type="text/css" />
+    <link href="/index.rss" rel="alternate" type="application/rss+xml" />
+</head>
+<body>
+	<div id="wrap">
+		<div id="header">
+			<p id="title"><a href="/"><span
+					class="title">hej</span>.starkast.net</a></p>
+			<h3 class="links">
+			Andra Starkast-siter
+			<a href="http://wiki.starkast.net">Wiki</a>, 
+			<a href="http://bilder.starkast.net">Bilder</a>, 
+			<a href="http://im.starkast.net">IM</a> &
+			<a href="http://webmail.starkast.net">Webmail</a>
+			</h3>
+	    	<p class="description">Insamlat från <%= domains.collect {|i| "<a href='http://#{i}/'>#{i}</a>" }.join(', ') %>.</p>
+	    </div>
+	    <div id="content">
+<% for entry in entries do %>
+	<div class="entry">
+		<div class="entrytitle">
+			<h2><a href="<%= entry.link %> "><%= entry.title %></a> (<a
+					class="sitelink" href="http://<%= entry.domain %>"><%= entry.domain %></a>)</h2> 
+		</div>
+	
+	</div>
+<% end %>
+	</div>
+</div>
+</body>
+</html>
