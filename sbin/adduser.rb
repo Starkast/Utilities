@@ -244,6 +244,7 @@ ARGV.options do |opts|
     create_dir("#{wwwdir}/htdocs", "#{options.username}:www", "0750")
     create_dir("#{wwwdir}/vhosts", "#{options.username}:www", "0750")
     create_dir("#{wwwdir}/tmp", "#{options.username}:#{options.username}", "0700")
+    create_dir("#{wwwdir}/logs", "#{options.username}:www", "0770")
 
     # Create symlink in ~
     execute_command("/bin/ln -s #{wwwdir} #{homedir}/www")

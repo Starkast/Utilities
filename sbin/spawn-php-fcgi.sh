@@ -51,7 +51,7 @@ for i in ${USERS}; do
 	SOCKETDIR=${CHROOT}/${FCGIDIR}/${i}
 	SOCKET=${FCGIDIR}/${i}/php.socket
 	FCGI_E="$E USER=$i"
-	PHP_U="$PHP -c /users/${i}/etc/php.ini"
+	PHP_U="$PHP -c /users/${i}/etc/php.ini -d error_log=/var/www/users/${i}/logs/php_error.log"
 	TMP_DIR="/var/www/users/${i}/tmp"
 	PHP_FCGI_CHILDREN=2
 	PHP_FCGI_CHILDREN=`head -n 1 /etc/nginx/users/${i}.conf | awk '{ print $3 }'` 2>/dev/null
