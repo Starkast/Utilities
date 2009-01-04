@@ -11,10 +11,7 @@ end
 starkast_hosts = %w(
   beaver.starkast.net
   genau.starkast.net
-  phoo1.starkast.net
-  phoo2.starkast.net
-  phoo3.starkast.net
-  phoo4.starkast.net
+  phoo.starkast.net
 )
 sites = Marshal.load(File.read('/var/www/db/sites')).collect {|key, site| key }
 
