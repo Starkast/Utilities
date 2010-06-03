@@ -59,26 +59,33 @@ Usage: `basename $0` action [-t time] [-x expression] [-v]
 Actions: -r			Restore from backup
          -d 			Difference from backup
 	 -l			List backups of this directory
+	 -c			Check to see if there is a backup for this dir and date
 	 -h			Shows this help
 Options: -t  TIME 		Time in the past, list times with -l
          -x  EXPRESSION		Only include files matching EXPRESSION
+	 -n  HOSTNAME		Override hostname for the server
 	 -v 			Verbose output
 __EOT
 }
 
-
+HOSTNAME=`hostname -s`
+LOCAL_PATH=`readlink -f $PWD`
 TIME=`date +%y%m%d`
+
 EXPRESSION='+ *'
 VERBOSE=""
 rflag=0
 dflag=0
 vflag=0
 lflag=0
+cflag=0
 
-while getopts "rdlt:x:vh" opt; do
+while getopts "rdclt:n:x:vh" opt; do
 	case $opt in
 	r)	rflag=1 ;;
 	d)	dflag=1 ;;
+	c)      cflag=1 ;;
+	n)	HOSTNAME=${OPTARG} ;;
 	l)	lflag=1 ;;
 	v)	VERBOSE="v" ;;
 	t)	TIME=${OPTARG}  ;;
@@ -88,8 +95,6 @@ while getopts "rdlt:x:vh" opt; do
 	esac
 done
 
-HOSTNAME=`hostname -s`
-LOCAL_PATH=`readlink -f $PWD`
 BACKUP_PATH="/storage/backup/$HOSTNAME/.zfs/snapshot/$TIME"
 REMOTE_PATH="$BACKUP_PATH/$LOCAL_PATH"
 
@@ -100,3 +105,4 @@ fi
 [ $rflag -eq 1 ] && restore && exit
 [ $dflag -eq 1 ] && diff && exit
 [ $lflag -eq 1 ] && list && exit
+[ $cflag -eq 1 ] && check && exit
