@@ -6,15 +6,15 @@ set -o posix
 #  Handle permission errors better
 
 check () {
-	ssh genau.starkast.net ls `dirname $BACKUP_PATH` >/dev/null 2>/dev/null
+	ssh -p $SSH_PORT $REMOTE_HOST ls $BACKUP_PATH >/dev/null 2>/dev/null
 	echo $?
 }
 
 list () {
-	ssh genau.starkast.net "(
-	cd /storage/backup/$HOSTNAME/.zfs/snapshot
+	ssh -p $SSH_PORT $REMOTE_HOST "(
+	cd $BACKUPS_PATH
 	for i in */$LOCAL_PATH; do
-		echo "'$i'" | sed 's/\// /' | awk '{ print "'$1'" }'
+		echo "'$i'" | sed 's/\// /' | awk '{ print "'$1'" }' | sed 's/[a-z]*\_//'
 	done)" 2>/dev/null
 	if [ $? -ne 0 ]; then
 		echo "error while checking for backup"
@@ -28,9 +28,10 @@ restore () {
 		exit 1
 	fi
 	rsync -Ouaz${VERBOSE} \
+	-e "ssh -p $SSH_PORT" \
 	--include "$EXPRESSION" \
 	--include "- *" \
-	genau.starkast.net:$REMOTE_PATH/ $LOCAL_PATH/ 2>/dev/null
+	$REMOTE_HOST:$REMOTE_PATH/ $LOCAL_PATH/ 2>/dev/null
 	if [ $? -ne 0 -a $? -ne 23 ]; then
 		echo "something went wrong, error $?" 1>&2
 		exit 1
@@ -43,10 +44,11 @@ diff () {
 		exit 1
 	fi
 	rsync -Onuaz \
+	-e "ssh -p $SSH_PORT" \
 	--out-format="%n" \
 	--include "$EXPRESSION" \
 	--include "- *" \
-	genau.starkast.net:$REMOTE_PATH/ $LOCAL_PATH/ 2>/dev/null
+	$REMOTE_HOST:$REMOTE_PATH/ $LOCAL_PATH/ 2>/dev/null
 	if [ $? -ne 0 -a $? -ne 23 ]; then
 		echo "Something went wrong, error $?" 1>&2
 		exit 1
@@ -63,7 +65,7 @@ Actions: -r			Restore from backup
 	 -h			Shows this help
 Options: -t  TIME 		Time in the past, list times with -l
          -x  EXPRESSION		Only include files matching EXPRESSION
-	 -n  HOSTNAME		Override hostname for the server
+	 -n  MACHINE		Override hostname for the machine to recover from
 	 -v 			Verbose output
 __EOT
 }
@@ -80,6 +82,7 @@ vflag=0
 lflag=0
 cflag=0
 
+
 while getopts "rdclt:n:x:vh" opt; do
 	case $opt in
 	r)	rflag=1 ;;
@@ -95,7 +98,16 @@ while getopts "rdclt:n:x:vh" opt; do
 	esac
 done
 
-BACKUP_PATH="/storage/backup/$HOSTNAME/.zfs/snapshot/$TIME"
+case $HOSTNAME in
+	beaver)	SSH_PORT=2020 ;;
+	phoo)	SSH_PORT=2030 ;;
+	*)	SSH_PORT=22   ;;
+esac
+
+REMOTE_HOST=${HOSTNAME}backup.starkast.net
+
+BACKUPS_PATH="/snapshots"
+BACKUP_PATH="$BACKUPS_PATH/${HOSTNAME}_${TIME}"
 REMOTE_PATH="$BACKUP_PATH/$LOCAL_PATH"
 
 if [ $# -eq 0 ]; then
