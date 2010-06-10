@@ -11,6 +11,7 @@ check () {
 }
 
 list () {
+	echo "Running list";
 	ssh -p $SSH_PORT $REMOTE_HOST "(
 	cd $BACKUPS_PATH
 	for i in */$LOCAL_PATH; do
@@ -27,6 +28,9 @@ restore () {
 		echo "no backup found for this date" 1>&2
 		exit 1
 	fi
+
+	echo "Restore from ${HOSTNAME} at ${TIME}"
+
 	rsync -Ouaz${VERBOSE} \
 	-e "ssh -p $SSH_PORT" \
 	--include "$EXPRESSION" \
@@ -43,6 +47,9 @@ diff () {
 		echo "no backup found for this date" 1>&2
 		exit 1
 	fi
+
+	echo "Diff against ${HOSTNAME} at ${TIME}"
+
 	rsync -Onuaz \
 	-e "ssh -p $SSH_PORT" \
 	--out-format="%n" \
@@ -53,6 +60,17 @@ diff () {
 		echo "Something went wrong, error $?" 1>&2
 		exit 1
 	fi
+}
+
+set_var () {
+	if [ $TIME -eq 0 ]; then
+		TIME=`list|tail -n 1`
+	fi
+
+
+	BACKUP_PATH="$BACKUPS_PATH/${HOSTNAME}_${TIME}"
+	REMOTE_PATH="$BACKUP_PATH/$LOCAL_PATH"
+
 }
 
 usage () {
@@ -72,8 +90,12 @@ __EOT
 
 HOSTNAME=`hostname -s`
 LOCAL_PATH=`readlink -f $PWD`
-TIME=`date +%y%m%d`
-
+TIME=0
+BACKUPS_PATH=""
+BACKUP_PATH=""
+REMOTE_PATH=""
+REMOTE_HOST=""
+SSH_PORT=22
 EXPRESSION='+ *'
 VERBOSE=""
 rflag=0
@@ -101,20 +123,16 @@ done
 case $HOSTNAME in
 	beaver)	SSH_PORT=2020 ;;
 	phoo)	SSH_PORT=2030 ;;
-	*)	SSH_PORT=22   ;;
 esac
 
 REMOTE_HOST=${HOSTNAME}backup.starkast.net
-
 BACKUPS_PATH="/snapshots"
-BACKUP_PATH="$BACKUPS_PATH/${HOSTNAME}_${TIME}"
-REMOTE_PATH="$BACKUP_PATH/$LOCAL_PATH"
 
 if [ $# -eq 0 ]; then
 	usage
 fi
 
-[ $rflag -eq 1 ] && restore && exit
-[ $dflag -eq 1 ] && diff && exit
+[ $rflag -eq 1 ] && set_var && restore && exit
+[ $dflag -eq 1 ] && set_var && diff && exit
 [ $lflag -eq 1 ] && list && exit
-[ $cflag -eq 1 ] && check && exit
+[ $cflag -eq 1 ] && set_var && check && exit
