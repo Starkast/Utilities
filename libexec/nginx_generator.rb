@@ -167,7 +167,8 @@ module Phoo
     
     attr_reader :name, :upstreams, :no_www, :use_apache,
       :always_www, :auth_file, :rewrites, :autoindex,
-      :upstreams_exclude, :default_mime, :hidden, :fastcgi
+      :upstreams_exclude, :default_mime, :hidden, :fastcgi,
+      :passenger, :rails_env
     
     def initialize(name, hash = {})
       @hash = (hash ||= {})
@@ -190,6 +191,8 @@ module Phoo
       @rewrites     = hash['rewrite']      || hash['rewrites'] || []
       @autoindex    = hash['autoindex'] == false ? false : true # Default to true
       @hidden       = hash['hidden']       || false
+      @passenger    = hash['passenger']    || false
+      @rails_env    = hash['rails_env']    || false
     rescue => e
       $stderr.puts e; exit 1
     end
@@ -223,7 +226,11 @@ module Phoo
       if default_host?
         "/var/www/users/#{user}/htdocs"
       else
-        "/var/www/users/#{user}/vhosts/#{name}"
+        if @passenger
+          "/var/www/users/#{user}/webapps/#{name}/public"
+        else
+          "/var/www/users/#{user}/vhosts/#{name}"
+        end
       end
     end
 
