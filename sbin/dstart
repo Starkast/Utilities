@@ -6,7 +6,8 @@
 #
 if [ X"$1" != X"" ]; then
 	sudo env $1=YES sh /etc/rc.local \
-	| sed 's/starting local daemons/Started/'
+	| sed 's/starting local daemons/Tried to start/'
+	echo "Remember to see if the daemon started!"
 else
 	echo "Usage: dstart <daemon>"
 fi
