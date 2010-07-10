@@ -1,20 +1,20 @@
 Tools for the Starkast computing system
 =======================================
 
-* bin/
+* bin/<br>
 Binaries to be used by all users.
 
-* lib/
+* lib/<br>
 Libraries needed by binaries.
 
-* libexec/
+* libexec/<br>
 Binaries to be executed only by other binaries, not by users.
 
-* sbin/
+* sbin/<br>
 Binaries used by administrators.
 
-* src/
+* src/<br>
 Source code.
 
-* templates/
+* templates/<br>
 Templates used by binaries.
