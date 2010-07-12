@@ -1,5 +1,5 @@
 @comment $OpenBSD$
-bin/my_tcp_ports.rb
+bin/my_tcp_ports
 bin/urestore
 bin/webctl
 lib/phoo.rb
@@ -9,7 +9,7 @@ libexec/quota_monitor_root.rb
 libexec/uvm_monitor.sh
 sbin/adduser.rb
 sbin/check-outdated-gems.sh
-sbin/chroot-install.sh
+sbin/chroot-install
 sbin/create_bind_users_include.rb
 sbin/create_mtree.rb
 sbin/domain_check.rb
@@ -17,7 +17,7 @@ sbin/dstart
 sbin/generate_bitlbee_graph.sh
 sbin/generate_password.rb
 sbin/install_php_ini.rb
-sbin/mkcert.sh
+sbin/mkcert
 sbin/mysql-backup.sh
 sbin/mysql_admin.rb
 sbin/rmuser.rb
