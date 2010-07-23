@@ -13,7 +13,7 @@ $template     = '/etc/nginx/user_template.erb'
 $user_index   = '/etc/nginx/users/index'
 $user_configs = '/etc/nginx/users/*.conf'
 $sites_html   = '/var/www/htdocs/sites.html'
-$sites_template = '/opt/templates/sites.erb'
+$sites_template = '/etc/Starkast-Utilities/templates/sites.erb'
 
 module Phoo  
   class NginxGenerator

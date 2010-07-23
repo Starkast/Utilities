@@ -17,7 +17,7 @@ end
 
 exit 1 if $user == ''
 
-$template = '/opt/templates/php.ini.erb'
+$template = '/etc/Starkast-Utilities/php.ini.erb'
 $path = "/var/www/users/#{$user}/etc/php.ini"
 
 begin
