@@ -259,7 +259,7 @@ ARGV.options do |opts|
     execute_command("/usr/local/sbin/install_php_ini.rb -u #{options.username}")
 
     # Build the web config
-    execute_command("/usr/bin/sudo -u #{options.username} /usr/local/bin/webctl -r")
+    execute_command("/usr/bin/env WEBCTL_USER=#{options.username} /usr/local/bin/webctl -r")
 
     # Create MySQL user
     mysql_passwd = generate_password
