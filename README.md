@@ -16,5 +16,5 @@ Binaries used by administrators.
 * src/<br>
 Source code.
 
-* templates/<br>
-Templates used by binaries.
+* share/<br>
+Templates used by binaries, to be installed in /etc.

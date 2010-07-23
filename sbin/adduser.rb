@@ -98,7 +98,7 @@ def build_configs(mtree = false, bind = false, web = false)
   execute_command("/usr/local/bin/ruby /usr/local/sbin/create_mtree.rb -f /etc/supervise/home.mtree") if mtree
   execute_command("/usr/local/bin/ruby /usr/local/sbin/create_mtree.rb -f /etc/supervise/www.mtree") if mtree
   load("/usr/local/sbin/create_bind_users_include.rb", true) if bind
-  execute_command("/bin/cp /usr/local/libdata/Starkast-Utilities/templates/nginx.yml #{web}/etc") if web
+  execute_command("/bin/cp /etc/Starkast-Utilities/nginx.yml #{web}/etc") if web
 end
 
 def send_welcome_mail(username, passwd, mysql_passwd)
