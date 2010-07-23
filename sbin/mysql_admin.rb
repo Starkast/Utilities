@@ -8,6 +8,7 @@ require 'ostruct'
 require '/usr/local/sbin/generate_password.rb'
 
 def execute_sql(sql)
+  $stderr.puts "Be prepared to give MySQL root password ..."
   command = "echo \"#{sql}\"|/usr/local/bin/mysql -u root -p"
   result = `#{command}`.strip
   return result if $?.exitstatus == 0
