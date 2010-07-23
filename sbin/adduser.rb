@@ -73,7 +73,7 @@ end
 
 def email_add(username, email)
   execute_command("echo '#{username}:\t#{email}' >> #{$mail_alias_file}")
-  execute_command("/usr/local/sbin/postalias #{$mail_alias_file}")
+  execute_command("/usr/bin/newaliases")
 end
 
 def email_remove(username)
@@ -85,7 +85,7 @@ def email_remove(username)
     end
   end
   File::open($mail_alias_file, 'w').puts(tmp)
-  execute_command("/usr/local/sbin/postalias #{$mail_alias_file}")
+  execute_command("/usr/bin/newaliases")
 end
 
 def create_dir(dir, chown, chmod)
