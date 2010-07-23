@@ -12,6 +12,8 @@ require 'ostruct'
 
 $mail_alias_file = '/etc/mail/aliases'
 
+arguments_to_script = ARGV.dup
+
 def generate_password(l=10)
   chars = ('a'..'z').to_a + ('A'..'Z').to_a + ('1'..'9').to_a
   chars = chars - ['o', 'O', 'i', 'I']
@@ -166,6 +168,8 @@ ARGV.options do |opts|
           'Login shell', String)             {|options.shell|}
   opts.on('-L', '--login-class CLASS',
           'Login class', String)             {|options.login_class|}
+  opts.on('-M', '--send-mail', 
+          'Send welcome mail')               {|options.send_mail|}
   opts.on('-h', '--help', 'Show usage') do
     puts opts
     exit
@@ -273,8 +277,8 @@ ARGV.options do |opts|
     execute_command("/usr/bin/pkill -HUP -U root -x nginx")
 
     # SOA and reload
-    puts "Glöm inte att: \n"
-    puts " - Bumpa SOA serial i /var/named/master/starkast.net"
+    puts "Don't forget to: \n"
+    puts " - Bump SOA serial in /var/named/master/starkast.net on the machine that's BIND master"
     puts " - rndc reload starkast.net"
 
     # Spawn PHP
@@ -283,11 +287,24 @@ ARGV.options do |opts|
     # Quota
     puts " - sudo edquota #{options.username} (soft=1048576, hard=1310720)"
 
-    # Send a welcome mail to the user
-    if send_welcome_mail(options.username, passwd, mysql_passwd)
-      puts "\nWelcome mail sent to #{options.username} (#{options.email})."
+
+    # For the other machines
+    uid = `id -u #{options.username}`.strip
+    gid = `id -g #{options.username}`.strip
+
+    puts "Create the user on the other machines, if you haven't done it already"
+    puts " - sudo #{$0} #{arguments_to_script.join(' ')} -u #{uid} -g #{gid}"
+    puts " - Copy the password from master.passwd on this machine to the other machines master.passwd"
+
+    if options.send_mail
+      # Send a welcome mail to the user
+      if send_welcome_mail(options.username, passwd, mysql_passwd)
+        puts "\nWelcome mail sent to #{options.username} (#{options.email})."
+      else
+        puts "Error sending mail to #{options.username} (#{options.email})."
+      end
     else
-      puts "Error sending mail to #{options.username} (#{options.email})."
+      puts "Did NOT send email to #{options.username}"
     end
     
   else
