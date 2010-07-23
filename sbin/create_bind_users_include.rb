@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require '/opt/lib/phoo.rb'
+require '/usr/local/lib/phoo.rb'
 
 exclude = %w(im ftp secure drift wiki teewars support)
 

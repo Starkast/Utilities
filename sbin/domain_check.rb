@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 begin
-  require '/opt/lib/phoo.rb'
+  require '/usr/local/lib/phoo.rb'
   require 'rubygems'
   require 'net/dns/resolver'
 rescue LoadError

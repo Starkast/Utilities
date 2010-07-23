@@ -1,6 +1,6 @@
 #!/usr/local/bin/ruby
 
-require '/opt/lib/phoo.rb'
+require '/usr/local/lib/phoo.rb'
 require 'yaml'
 require 'erb'
 
