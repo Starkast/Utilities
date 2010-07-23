@@ -43,7 +43,7 @@ def email_remove(username)
     end
   end
   File::open($mail_alias_file, 'w').puts(tmp)
-  execute_command("/usr/local/sbin/postalias #{$mail_alias_file}")
+  execute_command("/usr/bin/newaliases")
 end
 
 def build_configs(mtree = false, bind = false, web = false)
