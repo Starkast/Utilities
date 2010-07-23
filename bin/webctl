@@ -1,7 +1,6 @@
 #!/usr/local/bin/ruby
 
 require 'optparse'
-require '/opt/lib/phoo.rb'
 require 'socket'
 
 host = ''
@@ -19,8 +18,17 @@ ARGV.options do |opts|
   opts.parse!
 end
 
+
 def path_for(host)
   "/var/www/users/#{ENV['USER'].strip}/vhosts/#{host}"
+end
+
+def hostname
+  @hostname ||= `hostname`
+end
+
+def machine_ip
+  @machine_ip ||= `dig +short #{hostname}`
 end
 
 def resolve(domain)
@@ -40,11 +48,11 @@ def add(host)
   reload
   puts "#{host} added"
   ip = resolve(host)
-  if ip == $default_ip
+  if ip == machine_ip
   elsif ip != nil
-    $stderr.puts "#{host} points to #{ip}, should point to #$default_ip"
+    $stderr.puts "#{host} points to #{ip}, should point to #{machine_ip}"
   else
-    puts "#{host} should point to #$default_ip"
+    puts "#{host} should point to #{machine_ip}"
   end
 rescue => e
   Dir.rmdir(path_for(host))
@@ -72,9 +80,9 @@ def reload
   config_path = "/var/www/users/#{ENV['USER'].strip}/etc/nginx.yml"
   config = ''
   if File.readable?(config_path)
-    message = `cat #{config_path}|sudo -u www ruby /opt/libexec/nginx_generator.rb`
+    message = `cat #{config_path}|sudo -u www ruby /usr/local/libexec/nginx_generator.rb`
   else
-    message = `echo ''|sudo -u www ruby /opt/libexec/nginx_generator.rb`
+    message = `echo ''|sudo -u www ruby /usr/local/libexec/nginx_generator.rb`
   end
   raise(message) if not message.strip.empty?
   `sudo pkill -HUP -U root -x nginx`
