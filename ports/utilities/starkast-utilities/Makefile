@@ -25,7 +25,7 @@ do-install:
 	${INSTALL_SCRIPT} ${WRKSRC}/sbin/* ${PREFIX}/sbin/
 	${INSTALL_SCRIPT} ${WRKSRC}/libexec/* ${PREFIX}/libexec/
 	${INSTALL_DATA} ${WRKSRC}/lib/* ${PREFIX}/lib/
-	#${INSTALL_DATA_DIR} ${WRKSRC}/libdata/* ${PREFIX}/libdata/
+	${INSTALL_DATA_DIR} ${WRKSRC}/libdata/* ${PREFIX}/libdata/
 
 
 .include <bsd.port.mk>
