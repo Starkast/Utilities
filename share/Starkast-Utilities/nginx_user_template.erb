@@ -1,0 +1,141 @@
+# PHP: <%= @php_procs %>
+
+<% unless @use_apache %>
+#
+<% @upstreams.each do |name, servers| %>
+upstream <%= name %> {
+<% servers.each do |server| %>
+  server <%= server %>;
+<% end %>
+}
+<% end %>
+
+<% @sites.each do |name, site| %>
+  <% next if site.use_apache %>
+  server {
+    server_name	<%= site.server_name %>;
+    root 	<%= site.root %>/;
+    listen	80;
+    <% if site.autoindex %>
+    autoindex	on;
+    <% else %>
+    autoindex off;
+    <% end %>
+    <% if site.default_mime %>
+    default_type <%= site.default_mime %>;
+    <% end %>
+
+    if (-f $document_root/maintenance.html){
+      rewrite  ^(.*)$  /maintenance.html last;
+      break;
+    }
+
+    location /favicon.ico {
+      if (!-f $document_root/favicon.ico) {
+        root /var/www/defaults;
+      }
+    }
+
+    location /robots.txt {
+      if (!-f $document_root/robots.txt) {
+        root /var/www/defaults;
+      }
+    }
+
+    error_page	404	/404.html;
+    location /404.html {
+   	if (!-f $request_filename) {
+ 	   	root /var/www/defaults;
+	}
+    }
+<% if site.no_www %>
+    if ($host ~* "www") {
+      rewrite ^(.*)$ http://<%= site.name %>$1 permanent;
+      break;
+    }
+<% end %>
+<% if site.always_www %>
+    if ($host != "www.<%= site.server_name.split.first %>") {
+      rewrite ^(.*)$ http://www.<%= site.name %>$1 permanent;
+      break;
+    }
+<% end %>
+
+    location / {
+<% if site.auth_file %>
+      auth_basic            "<%= site.name %> requires credentials.";
+      auth_basic_user_file  <%= site.auth_file %>;
+<% end %>
+
+      if (-f $request_filename.html) {
+        rewrite (.*) $1.html break;
+      }
+
+      if (-f $request_filename.php) {
+        rewrite (.*) http://$host$uri.php break;
+      }
+
+<% for rewrite in site.rewrites do %>
+  <% if rewrite.is_a?(Hash) && rewrite.key?('unless_filename_exist') %>
+    if (!-e $request_filename) {
+      <% for real_rewrite in rewrite['unless_filename_exist'] %>
+      rewrite <%= real_rewrite %> last;
+      <% end %>
+    }
+  <% else %>
+      rewrite <%= rewrite %> last;
+  <% end %>
+<% end %>
+
+<% if not site.upstreams.empty? %>
+	<% if not site.upstreams_exclude.empty? %>
+	      <% for exclude in site.upstreams_exclude %>
+      rewrite ^(/<%= exclude %>.*)$ $1 break;
+	      <% end %>
+	<% end %>
+
+
+      include proxy_params;
+      if (!-f $request_filename) {
+        proxy_pass 		http://<%= site.name %>;
+        break;
+      }
+<% end %>
+
+<% if site.fastcgi %>
+  include 	fastcgi_params;
+  if (!-f $request_filename) {
+    fastcgi_pass	<%= site.fastcgi %>;
+    break;
+  }
+<% end %>
+    }
+
+  location ~ \.php(/|$) {
+  <% if @php_disabled %>
+      return 403;
+  <% else %>
+      set $script_name $uri;
+      set $path_info	"";
+
+      if ($uri ~ ^(.+\.php)(/.*)$) {
+        set  $script_name  $1;
+        set  $path_info    $2;
+      }
+
+      if (!-f <%= site.root %>$script_name) {
+        return 404;
+      }
+
+      include 	fastcgi_params;
+      fastcgi_pass	unix:/var/www/fastcgi/<%= @user %>/php.socket;
+      fastcgi_index	index.php;
+      fastcgi_param	SCRIPT_FILENAME	<%= site.root %>/$script_name;
+      fastcgi_param	SCRIPT_NAME	$script_name;
+      fastcgi_param   PATH_INFO	$path_info;
+      <% end %>
+    }
+  }
+<% end %>
+
+<% end %>

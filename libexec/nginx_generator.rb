@@ -9,7 +9,7 @@ require 'erb'
 
 ## Settings
 $database     = '/var/www/db/sites'
-$template     = '/etc/nginx/user_template.erb'
+$template     = '/usr/local/share/Starkast-Utilities/nginx_user_template.erb'
 $user_index   = '/etc/nginx/users/index'
 $user_configs = '/etc/nginx/users/*.conf'
 $sites_html   = '/var/www/htdocs/sites.html'
