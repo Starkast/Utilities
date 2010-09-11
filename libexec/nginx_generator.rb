@@ -1,6 +1,6 @@
 #!/usr/local/bin/ruby
 
-require '/usr/local/lib/phoo.rb'
+require '../lib/phoo.rb'
 require 'yaml'
 require 'erb'
 
@@ -15,7 +15,7 @@ $user_configs = '/etc/nginx/users/*.conf'
 $sites_html   = '/var/www/htdocs/sites.html'
 $sites_template = '/etc/Starkast-Utilities/sites.erb'
 
-module Phoo  
+module Phoo
   class NginxGenerator
     def initialize
       load_config
