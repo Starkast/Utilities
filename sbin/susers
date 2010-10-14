@@ -1,0 +1,60 @@
+#!/bin/sh
+
+set -o posix
+
+disabled_users() {
+  groupinfo disabled_users | grep members | awk '{ for (i=2;i<=NF;i++) print $i }'
+}
+
+all_users() {
+  groupinfo users | grep members | awk '{ for (i=2;i<=NF;i++) print $i }'
+}
+
+active_users() {
+  ALL_USERS=`mktemp`
+  DIS_USERS=`mktemp`  
+  
+  all_users >> $ALL_USERS
+  disabled_users >> $DIS_USERS
+
+  ruby -e "
+  def read_file_to_array(file) 
+    a=[]
+    File::readlines(file).each do |line|
+      a << line.strip
+    end
+  end
+  
+  a1 = read_file_to_array('$ALL_USERS')
+  a2 = read_file_to_array('$DIS_USERS')
+  (a1-a2).each {|line| puts line}"
+
+  rm $ALL_USERS
+  rm $DIS_USERS
+}
+
+usage () {
+    cat << __EOT
+Usage: `basename $0` action
+Actions: -a     List active users
+         -d     List disabled users
+         -u     List all users
+         -h     Show usage
+__EOT
+
+    exit 1
+}
+
+while getopts "aduh" c; do
+	case $c in
+		a)  active_users ;;
+		d)  disabled_users ;;
+		u)  all_users ;;
+		h)  usage ;;
+		*)  usage ;;
+	esac
+done
+
+if [ $# -eq 0 ]; then
+	usage
+fi
