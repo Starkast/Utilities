@@ -1,6 +1,6 @@
 #!/usr/local/bin/ruby
 
-require '../lib/phoo.rb'
+require File.expand_path('../../lib/phoo.rb', __FILE__)
 require 'yaml'
 require 'erb'
 
