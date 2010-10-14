@@ -17,4 +17,4 @@ Binaries used by administrators.
 Source code.
 
 * share/<br>
-Templates used by binaries, to be installed in /etc.
+Templates used by binaries, some to be installed in /etc.
