@@ -17,7 +17,7 @@ active_users() {
   all_users >> $ALL_USERS
   disabled_users >> $DIS_USERS
 
-  ruby -e "
+  /usr/local/bin/ruby -e "
   def read_file_to_array(file) 
     a=[]
     File::readlines(file).each do |line|
