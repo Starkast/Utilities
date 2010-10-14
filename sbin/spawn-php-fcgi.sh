@@ -2,7 +2,8 @@
 
 # config
 
-USERS=`ls -1 /var/www/users`
+# Active users
+USERS=`/usr/local/sbin/susers -a`
 
 WWW_USER='www'
 CHROOT="/var/www"
