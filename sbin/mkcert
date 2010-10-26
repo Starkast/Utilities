@@ -3,7 +3,7 @@
 if [ X"$1" != X"" ]; then
 	SERVICE=$1
 else
-	echo "Usage: mkcert.sh <service>"
+	echo "Usage: $0 <service>"
 	exit 1
 fi
 
