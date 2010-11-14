@@ -12,8 +12,6 @@ require 'ostruct'
 
 $mail_alias_file = '/etc/mail/aliases'
 
-arguments_to_script = ARGV.dup
-
 def generate_password(l=10)
   chars = ('a'..'z').to_a + ('A'..'Z').to_a + ('1'..'9').to_a
   chars = chars - ['o', 'O', 'i', 'I']
@@ -203,7 +201,7 @@ ARGV.options do |opts|
 
   # Required
   user = options.username
-  comment = "-c '#{options.name}'"
+  comment = "-c '#{options.name}'" # Name
   password = "-p '#{epasswd}'"
 
   # Optional
@@ -265,9 +263,6 @@ ARGV.options do |opts|
     # Build the web config
     execute_command("/usr/bin/env WEBCTL_USER=#{options.username} /usr/local/bin/webctl -r")
 
-    # Create MySQL user
-    mysql_passwd = generate_password
-    execute_command("/usr/local/sbin/mysql_admin.rb -a #{options.username} -p #{mysql_passwd}")
     
     # Spawn PHP
     # does not work good enough, run manually
@@ -276,25 +271,39 @@ ARGV.options do |opts|
     # Restart Nginx
     execute_command("/usr/bin/pkill -HUP -U root -x nginx")
 
+    # Print instructions for stuff to do manually
+    puts "Don't forget to:"
+
+    # Command to create MySQL user
+    mysql_passwd = generate_password
+    puts " * Create MySQL user and database:"
+    puts "   /usr/local/sbin/mysql_admin.rb -a #{options.username} -p #{mysql_passwd}"
+    puts "   You will be asked for the MySQL root password when you do this!"
+    puts "   (ignore this if you are creating the user for the second time)"
+
     # SOA and reload
-    puts "Don't forget to: \n"
-    puts " - Bump SOA serial in /var/named/master/starkast.net on the machine that's BIND master"
-    puts " - rndc reload starkast.net"
+    puts " * Bump SOA serial in /var/named/master/starkast.net on the machine that is
+   BIND master Reload BIND:"
+    puts "   rndc reload starkast.net"
 
     # Spawn PHP
-    puts " - sudo /usr/local/sbin/spawn-php-fcgi.sh"
+    puts " * Spawn PHP processes:"
+    puts "   sudo /usr/local/sbin/spawn-php-fcgi.sh"
 
     # Quota
-    puts " - sudo edquota #{options.username} (soft=1048576, hard=1310720)"
-
+    puts " * Set qouta limits to soft=1048576, hard=1310720:"
+    puts "   sudo edquota #{options.username}"
 
     # For the other machines
     uid = `id -u #{options.username}`.strip
     gid = `id -g #{options.username}`.strip
+    arguments_to_script = "-l #{options.username} -E #{options.email} -N '#{options.name}' "
 
-    puts "Create the user on the other machines, if you haven't done it already"
-    puts " - sudo #{$0} #{arguments_to_script.join(' ')} -u #{uid} -g #{gid}"
-    puts " - Copy the password from master.passwd on this machine to the other machines master.passwd"
+    puts " * Create the user on the other machines, if you haven't done it already:"
+    puts "   sudo #{$0} #{arguments_to_script} -u #{uid} -g #{gid}"
+
+    puts " * Copy the password from master.passwd on this machine to the other 
+   machines master.passwd"
 
     if options.send_mail
       # Send a welcome mail to the user
