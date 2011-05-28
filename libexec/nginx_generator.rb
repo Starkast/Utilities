@@ -121,7 +121,8 @@ module Phoo
       @upstreams = {}
       @sites.each do |name, site|
         if not site.upstreams.empty?
-          @upstreams[name] = site.upstreams
+          # Make sure upstreams is an array
+          @upstreams[name] = ([] << site.upstreams).flatten
         end
       end
       
