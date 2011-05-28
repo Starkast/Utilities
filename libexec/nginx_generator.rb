@@ -189,7 +189,7 @@ module Phoo
       @always_www   = hash['always_www']   || false
       @auth_file    = hash['auth_file']    || false
       @default_mime = hash['default_mime'] || false
-      @rewrites     = hash['rewrite']      || hash['rewrites'] || []
+      @rewrites     = ([] << hash['rewrite']).flatten || hash['rewrites'] || []
       @autoindex    = hash['autoindex'] == false ? false : true # Default to true
       @hidden       = hash['hidden']       || false
       @passenger    = hash['passenger']    || false
