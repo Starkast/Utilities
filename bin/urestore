@@ -63,14 +63,8 @@ diff () {
 }
 
 set_var () {
-	if [ $TIME -eq 0 ]; then
-		TIME=`list|tail -n 1`
-	fi
-
-
 	BACKUP_PATH="$BACKUPS_PATH/${HOSTNAME}_${TIME}"
 	REMOTE_PATH="$BACKUP_PATH/$LOCAL_PATH"
-
 }
 
 usage () {
@@ -90,7 +84,7 @@ __EOT
 
 HOSTNAME=`hostname -s`
 LOCAL_PATH=`readlink -f $PWD`
-TIME=0
+TIME="current"
 BACKUPS_PATH=""
 BACKUP_PATH=""
 REMOTE_PATH=""
