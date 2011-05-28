@@ -87,6 +87,14 @@ upstream <%= name %> {
   <% end %>
 <% end %>
 
+<% if site.passenger %>
+  passenger_enabled on;
+  <% if site.rails_env %>
+    rails_env <%= site.rails_env %>;
+  <% end %>
+<% end %>
+
+
 <% if not site.upstreams.empty? %>
 	<% if not site.upstreams_exclude.empty? %>
 	      <% for exclude in site.upstreams_exclude %>
