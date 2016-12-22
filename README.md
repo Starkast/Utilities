@@ -1,6 +1,8 @@
 Tools for the Starkast computing system
 =======================================
 
+_Unmaintained, these tools are not in use any more!_
+
 * bin/<br>
 Binaries to be used by all users.
 
